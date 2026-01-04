@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 're
 import { fabric } from 'fabric'
 import badgeStyles, { badgePositions } from '../../data/badgeStyles'
 
-const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleText, subtitleText, fontConfig, badgeConfig }, ref) => {
+const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleText, subtitleText, fontConfig, textColors, badgeConfig }, ref) => {
   const canvasRef = useRef(null)
   const fabricCanvasRef = useRef(null)
   const [isReady, setIsReady] = useState(false)
@@ -153,7 +153,7 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
         top: posY,
         fontFamily: fontConfig?.titleFont || textConfig.font || 'Bebas Neue',
         fontSize: fontConfig?.titleSize || textConfig.size || 72,
-        fill: textConfig.color || '#ECF0F1',
+        fill: textColors?.titleColor || textConfig.color || '#ECF0F1',
         originX: 'center',
         originY: 'center',
         textAlign: textConfig.align || 'center',
@@ -185,7 +185,7 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
       canvas.bringToFront(text)
       canvas.renderAll()
     }
-  }, [titleText, selectedTemplate, fontConfig, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
+  }, [titleText, selectedTemplate, fontConfig, textColors, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
 
   // Add/update subtitle text
   useEffect(() => {
@@ -220,7 +220,7 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
         top: posY,
         fontFamily: fontConfig?.subtitleFont || textConfig.font || 'Montserrat',
         fontSize: fontConfig?.subtitleSize || textConfig.size || 36,
-        fill: textConfig.color || '#E67E22',
+        fill: textColors?.subtitleColor || textConfig.color || '#E67E22',
         originX: 'center',
         originY: 'center',
         textAlign: textConfig.align || 'center',
@@ -252,7 +252,7 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
       canvas.bringToFront(text)
       canvas.renderAll()
     }
-  }, [subtitleText, selectedTemplate, fontConfig, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
+  }, [subtitleText, selectedTemplate, fontConfig, textColors, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
 
   // Add/update AI Generated badge
   useEffect(() => {

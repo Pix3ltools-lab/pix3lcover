@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import UploadPanel from './components/Sidebar/UploadPanel'
 import TemplateSelector from './components/Sidebar/TemplateSelector'
 import FontSelector from './components/Sidebar/FontSelector'
+import TextColorPicker from './components/Sidebar/TextColorPicker'
 import BadgeEditor from './components/Sidebar/BadgeEditor'
 import ExportPanel from './components/Sidebar/ExportPanel'
 import ThumbnailCanvas from './components/Canvas/ThumbnailCanvas'
@@ -19,6 +20,10 @@ function App() {
     subtitleFont: 'Montserrat',
     titleSize: 72,
     subtitleSize: 36
+  })
+  const [textColors, setTextColors] = useState({
+    titleColor: null, // null = use template default
+    subtitleColor: null
   })
   const [badgeConfig, setBadgeConfig] = useState({
     enabled: false,
@@ -44,6 +49,10 @@ function App() {
 
   const handleBadgeChange = (newBadgeConfig) => {
     setBadgeConfig(newBadgeConfig)
+  }
+
+  const handleTextColorChange = (newTextColors) => {
+    setTextColors(newTextColors)
   }
 
   const handleExport = (options) => {
@@ -169,6 +178,14 @@ function App() {
               onFontChange={handleFontChange}
             />
 
+            {/* Text Color Picker */}
+            <TextColorPicker
+              titleColor={textColors.titleColor}
+              subtitleColor={textColors.subtitleColor}
+              selectedTemplate={selectedTemplate}
+              onColorChange={handleTextColorChange}
+            />
+
             {/* Badge Panel */}
             <BadgeEditor
               badgeConfig={badgeConfig}
@@ -190,6 +207,7 @@ function App() {
             titleText={titleText}
             subtitleText={subtitleText}
             fontConfig={fontConfig}
+            textColors={textColors}
             badgeConfig={badgeConfig}
           />
         </main>
