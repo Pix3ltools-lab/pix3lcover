@@ -79,10 +79,10 @@ export const badgeStyles = [
 ]
 
 export const badgePositions = [
-  { id: 'top-right', name: 'Top Right', coords: { x: 1180, y: 20 } },
   { id: 'top-left', name: 'Top Left', coords: { x: 20, y: 20 } },
-  { id: 'bottom-right', name: 'Bottom Right', coords: { x: 1080, y: 660 } },
-  { id: 'bottom-left', name: 'Bottom Left', coords: { x: 20, y: 660 } }
+  { id: 'top-right', name: 'Top Right', coords: { x: 1180, y: 20 } },
+  { id: 'bottom-left', name: 'Bottom Left', coords: { x: 20, y: 660 } },
+  { id: 'bottom-right', name: 'Bottom Right', coords: { x: 1080, y: 660 } }
 ]
 
 export const badgeTexts = [
