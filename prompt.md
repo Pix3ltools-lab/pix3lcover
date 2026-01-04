@@ -124,15 +124,19 @@ Create 6 professional music video templates:
   - Same controls as title
   - Auto-positioned below title
 
-- **Available fonts (8 total):**
+- **Available fonts (12 total):**
   - Bebas Neue (bold, impactful)
   - Oswald (modern, clean)
   - Playfair Display (elegant serif)
   - Montserrat (versatile sans-serif)
   - Anton (condensed, powerful)
   - Roboto Condensed (readable, modern)
-  - Rajdhani (geometric, cinematic) - NEW
-  - Cinzel (classic serif, movie poster style) - NEW
+  - Rajdhani (geometric, cinematic)
+  - Cinzel (classic serif, movie poster style)
+  - **Bodoni Moda** (high fashion, luxury editorial) - NEW
+  - **Cormorant** (refined Italian/French elegance) - NEW
+  - **Jost** (geometric clean, luxury modern) - NEW
+  - **Abril Fatface** (bold display, fashion editorial) - NEW
 
 #### 4. AI Generated Badge
 - Multiple badge styles:
@@ -336,8 +340,12 @@ Pre-configured palettes for blues rock:
 4. **Montserrat** - Clean sans-serif (Google Fonts)
 5. **Anton** - Condensed, impactful (Google Fonts)
 6. **Roboto Condensed** - Readable, modern (Google Fonts)
-7. **Rajdhani** - Geometric, cinematic (Google Fonts) - NEW
-8. **Cinzel** - Classic serif, movie poster style (Google Fonts) - NEW
+7. **Rajdhani** - Geometric, cinematic (Google Fonts)
+8. **Cinzel** - Classic serif, movie poster style (Google Fonts)
+9. **Bodoni Moda** - High fashion, luxury editorial (Google Fonts) - NEW
+10. **Cormorant** - Refined Italian/French elegance (Google Fonts) - NEW
+11. **Jost** - Geometric clean, luxury modern (Google Fonts) - NEW
+12. **Abril Fatface** - Bold display, fashion editorial (Google Fonts) - NEW
 
 ### Graphic Elements
 - Guitar silhouette SVG
@@ -933,9 +941,16 @@ VITE_FIREBASE_CONFIG=...
 - **Template ID reference**: Saves only template ID for consistency
 - **Storage utilities**: Dedicated storageUtils.js for all localStorage operations
 
-### New Fonts (Cinematic Styles)
+### New Fonts (12 Total)
+**Cinematic Styles:**
 - **Rajdhani**: Modern, geometric, perfect for "REDD SIRIEN" style titles
 - **Cinzel**: Classic serif, elegant, ideal for movie poster aesthetics
+
+**Fashion/Luxury Collection:**
+- **Bodoni Moda**: High fashion luxury editorial (Vogue style)
+- **Cormorant**: Refined Italian/French elegance, sophisticated
+- **Jost**: Geometric clean, modern luxury sans-serif
+- **Abril Fatface**: Bold display for statement titles and magazine covers
 
 ### Cinematic Box Template
 - **Full-width text background**: Black bar spans entire canvas width

@@ -83,6 +83,46 @@ export const fonts = [
     preview: 'RED-SIREN',
     bestFor: 'Movie posters, elegant titles, classic aesthetics',
     recommended: true
+  },
+  {
+    id: 'bodoni-moda',
+    name: 'Bodoni Moda',
+    family: 'Bodoni Moda',
+    category: 'serif',
+    description: 'High fashion, luxury editorial',
+    preview: 'VOGUE',
+    bestFor: 'Fashion titles, luxury brands, editorial style',
+    recommended: true
+  },
+  {
+    id: 'cormorant',
+    name: 'Cormorant',
+    family: 'Cormorant',
+    category: 'serif',
+    description: 'Refined Italian/French elegance',
+    preview: 'Elegance',
+    bestFor: 'Sophisticated titles, refined aesthetics',
+    recommended: true
+  },
+  {
+    id: 'jost',
+    name: 'Jost',
+    family: 'Jost',
+    category: 'sans-serif',
+    description: 'Geometric clean, luxury modern',
+    preview: 'MINIMAL LUXURY',
+    bestFor: 'Fashion subtitles, clean modern design',
+    recommended: true
+  },
+  {
+    id: 'abril-fatface',
+    name: 'Abril Fatface',
+    family: 'Abril Fatface',
+    category: 'display',
+    description: 'Bold display, fashion editorial',
+    preview: 'FASHION',
+    bestFor: 'Statement titles, magazine covers, dramatic impact',
+    recommended: true
   }
 ]
 
