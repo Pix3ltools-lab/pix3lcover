@@ -1,22 +1,22 @@
-# Blues Rock Thumbnail Generator
+# Music Video Thumbnail Generator
 
-A web application to create professional YouTube thumbnails for AI-generated blues rock music videos in under 5 minutes.
+A web application to create professional YouTube thumbnails for AI-generated music videos in under 5 minutes.
 
 ## Features
 
 ### ✅ Implemented (Working)
 
 - 🖼️ **Image Upload**: Drag & drop, file upload, or paste from clipboard (Ctrl+V)
-- 🎨 **5 Professional Templates**: Blues rock themed designs with gradients
+- 📐 **Dual Format Support**: 16:9 landscape (1280x720) and 9:16 portrait (720x1280) for YouTube Shorts
+- 🎨 **5 Professional Templates**: Music-themed designs with gradients, responsive to format
 - ✍️ **Text Editing**: Title and subtitle with customizable fonts and effects
-- 🎯 **Interactive Canvas**: Drag and resize elements (1280x720px)
+- 🔤 **Font Selector**: Choose from 6 Google Fonts with size controls
+- 🎯 **Interactive Canvas**: Drag and resize elements, format-aware positioning
+- 🤖 **AI Generated Badge**: 4 styles, transparent or custom background, smart positioning
 - 📥 **Export System**: Download as JPG (80-100% quality) or PNG
-- 🎨 **Color Palettes**: 4 pre-configured blues rock color schemes
-- 🤖 **AI Generated Badge**: 4 styles, customizable text, draggable
 
 ### 🚧 Planned (Not Yet Implemented)
 - 🎨 **Color Picker**: Custom color selection for text
-- 🔤 **Font Selector**: UI to change fonts
 - 💾 **Project Management**: Save/load projects to localStorage
 - ↩️ **Undo/Redo**: History stack for changes
 - ⌨️ **Keyboard Shortcuts**: Speed up workflow
@@ -106,7 +106,9 @@ src/
 
 ### 🚧 Phase 2: Enhanced Features (In Progress)
 - [x] AI Generated badge system (4 styles, customizable, draggable)
-- [ ] Font selector UI
+- [x] Font selector UI (6 fonts, size controls for title and subtitle)
+- [x] Dual format support (16:9 landscape + 9:16 portrait)
+- [x] Badge background customization (transparent or custom color)
 - [ ] Color picker for text customization
 - [ ] Save/load projects (localStorage)
 - [ ] Undo/Redo functionality
@@ -126,4 +128,4 @@ Private (for now)
 
 ## Author
 
-Created for AI blues rock music content creators
+Created for AI music content creators

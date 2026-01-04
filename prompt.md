@@ -1,11 +1,11 @@
-# Blues Rock AI Thumbnail Generator - Project Specification
+# Music Video Thumbnail Generator - Project Specification
 
 ## Project Overview
 
-**Project Name:** Blues Rock AI Thumbnail Generator  
-**Target User:** YouTuber creating AI-generated blues rock music videos  
-**Purpose:** Personal tool to speed up thumbnail creation, with potential future SaaS monetization  
-**Platform:** Web application deployed on Vercel  
+**Project Name:** Music Video Thumbnail Generator
+**Target User:** YouTuber creating AI-generated music videos
+**Purpose:** Personal tool to speed up thumbnail creation, with potential future SaaS monetization
+**Platform:** Web application deployed on Vercel
 **Timeline:** MVP in 2 weeks, refinement in 4 weeks, SaaS launch in 3 months
 
 ## User Context
@@ -184,7 +184,8 @@ Pre-configured palettes for blues rock:
 
 #### 8. Export Functionality
 - **Output specs:**
-  - Size: 1280x720px (YouTube standard)
+  - Size: 1280x720px (16:9 landscape - YouTube standard)
+  - Size: 720x1280px (9:16 portrait - YouTube Shorts)
   - Format: JPG (high quality, ~200-500KB)
   - Alternative: PNG for transparency needs
 - **Export button:** Clear, prominent
@@ -528,20 +529,22 @@ PRO TIER - $19/month:
 
 ## Development Phases
 
-### Week 1: Foundation
+### Week 1: Foundation (✅ Completed)
 - [x] Project setup (Vite + React + Tailwind)
 - [x] Basic UI layout (sidebar + canvas area)
-- [x] Image upload functionality
-- [x] Canvas initialization with Fabric.js
+- [x] Image upload functionality (drag & drop, file picker, paste)
+- [x] Canvas initialization with Fabric.js 5.3
 - [x] Template data structure
 - [ ] Deploy to Vercel
 
-### Week 2: Core Features
+### Week 2: Core Features (✅ Completed)
 - [x] Template system (all 5 templates)
-- [x] Text editing system
+- [x] Text editing system (title + subtitle)
+- [x] Font selector UI (6 Google Fonts, size controls)
 - [x] Color palette selector (data structure ready)
-- [x] Badge system (4 styles, customizable, draggable)
-- [x] Export functionality
+- [x] Badge system (4 styles, customizable, transparent/custom background)
+- [x] Export functionality (JPG/PNG with quality control)
+- [x] Dual format support (16:9 landscape + 9:16 portrait)
 - [ ] Basic save/load (localStorage)
 
 ### Week 3: Polish & Refinement
