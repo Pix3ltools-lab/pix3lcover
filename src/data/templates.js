@@ -297,6 +297,68 @@ export const templates = [
       position: 'top-right',
       style: 'minimal'
     }
+  },
+  {
+    id: 'cinematic-box',
+    name: 'Cinematic Box',
+    description: 'Black box background with elegant green accent',
+    thumbnail: '🎬',
+    background: {
+      type: 'solid',
+      color: '#000000',
+      gradient: {
+        enabled: false
+      }
+    },
+    layout: {
+      type: 'full-bleed',
+      imageOpacity: 0.6,
+      imageBlur: 1
+    },
+    text: {
+      title: {
+        font: 'Cinzel',
+        size: 48,
+        color: '#D4AF37',
+        position: { x: 640, y: 600 },
+        align: 'center',
+        effects: {
+          outline: { enabled: false },
+          shadow: { enabled: false },
+          textBackground: {
+            enabled: true,
+            color: '#000000',
+            opacity: 1.0,
+            fullWidth: true,
+            padding: { horizontal: 0, vertical: 12 }
+          }
+        }
+      },
+      subtitle: {
+        font: 'Montserrat',
+        size: 24,
+        color: '#FFFFFF',
+        position: { x: 640, y: 660 },
+        align: 'center',
+        effects: {
+          outline: { enabled: false },
+          shadow: { enabled: false }
+        }
+      }
+    },
+    graphics: {
+      watermark: {
+        type: 'film-strip',
+        position: 'top-left',
+        opacity: 0.1,
+        size: 150
+      }
+    },
+    badge: {
+      enabled: false,
+      position: 'top-right',
+      style: 'minimal'
+    }
   }
 ]
 

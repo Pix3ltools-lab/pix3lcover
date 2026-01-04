@@ -184,17 +184,12 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
       }
 
       const text = new fabric.Text(titleText.toUpperCase(), {
-        name: 'title',
-        left: posX,
-        top: posY,
         fontFamily: fontConfig?.titleFont || textConfig.font || 'Bebas Neue',
         fontSize: fontConfig?.titleSize || textConfig.size || 72,
         fill: textColors?.titleColor || textConfig.color || '#ECF0F1',
         originX: 'center',
         originY: 'center',
-        textAlign: textConfig.align || 'center',
-        selectable: true,
-        hasControls: true
+        textAlign: textConfig.align || 'center'
       })
 
       // Add outline effect if specified
@@ -217,8 +212,71 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
         })
       }
 
-      canvas.add(text)
-      canvas.bringToFront(text)
+      // Check if text background box is enabled
+      if (textConfig.effects?.textBackground?.enabled) {
+        const bgConfig = textConfig.effects.textBackground
+        const paddingH = bgConfig.padding?.horizontal || 30
+        const paddingV = bgConfig.padding?.vertical || 15
+
+        // Get text dimensions
+        const textWidth = text.width
+        const textHeight = text.height
+
+        // Determine background width
+        const bgWidth = bgConfig.fullWidth ? CANVAS_WIDTH : textWidth + (paddingH * 2)
+        const bgHeight = textHeight + (paddingV * 2)
+
+        // Create background rectangle
+        const bgRect = new fabric.Rect({
+          width: bgWidth,
+          height: bgHeight,
+          fill: bgConfig.color || '#000000',
+          opacity: bgConfig.opacity || 0.8,
+          originX: 'center',
+          originY: 'center'
+        })
+
+        const groupObjects = [bgRect, text]
+
+        // Add bottom border line if enabled
+        if (bgConfig.borderBottom?.enabled) {
+          const borderLine = new fabric.Rect({
+            width: bgWidth,
+            height: bgConfig.borderBottom.width || 2,
+            fill: bgConfig.borderBottom.color || '#FFFFFF',
+            originX: 'center',
+            originY: 'center',
+            top: bgHeight / 2
+          })
+          groupObjects.push(borderLine)
+        }
+
+        // Create group with background and text
+        const titleGroup = new fabric.Group(groupObjects, {
+          name: 'title',
+          left: posX,
+          top: posY,
+          originX: 'center',
+          originY: 'center',
+          selectable: true,
+          hasControls: true
+        })
+
+        canvas.add(titleGroup)
+        canvas.bringToFront(titleGroup)
+      } else {
+        // Add text without background
+        text.set({
+          name: 'title',
+          left: posX,
+          top: posY,
+          selectable: true,
+          hasControls: true
+        })
+        canvas.add(text)
+        canvas.bringToFront(text)
+      }
+
       canvas.renderAll()
     }
   }, [titleText, selectedTemplate, fontConfig, textColors, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
