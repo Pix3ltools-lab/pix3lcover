@@ -2,36 +2,52 @@ import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 're
 import { fabric } from 'fabric'
 import badgeStyles, { badgePositions } from '../../data/badgeStyles'
 
-const ThumbnailCanvas = forwardRef(({ imageUrl, selectedTemplate, titleText, subtitleText, fontConfig, badgeConfig }, ref) => {
+const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleText, subtitleText, fontConfig, badgeConfig }, ref) => {
   const canvasRef = useRef(null)
   const fabricCanvasRef = useRef(null)
   const [isReady, setIsReady] = useState(false)
 
-  // YouTube thumbnail dimensions
-  const CANVAS_WIDTH = 1280
-  const CANVAS_HEIGHT = 720
+  // Calculate canvas dimensions based on format
+  // Use display dimensions directly for now
+  const CANVAS_WIDTH = format === '9:16' ? 360 : 800
+  const CANVAS_HEIGHT = format === '9:16' ? 640 : 450
 
   // Initialize Fabric.js canvas
   useEffect(() => {
     if (!canvasRef.current) return
 
-    // Create fabric canvas
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width: CANVAS_WIDTH,
-      height: CANVAS_HEIGHT,
-      backgroundColor: '#1E3A5F',
-      selection: true,
-      preserveObjectStacking: true
-    })
+    setIsReady(false)
 
-    fabricCanvasRef.current = canvas
-    setIsReady(true)
+    // Dispose existing canvas if any
+    if (fabricCanvasRef.current) {
+      fabricCanvasRef.current.dispose()
+      fabricCanvasRef.current = null
+    }
+
+    // Small delay to ensure cleanup is complete
+    const timeoutId = setTimeout(() => {
+      // Create fabric canvas
+      const canvas = new fabric.Canvas(canvasRef.current, {
+        width: CANVAS_WIDTH,
+        height: CANVAS_HEIGHT,
+        backgroundColor: '#1E3A5F',
+        selection: true,
+        preserveObjectStacking: true
+      })
+
+      fabricCanvasRef.current = canvas
+      setIsReady(true)
+    }, 50)
 
     // Cleanup
     return () => {
-      canvas.dispose()
+      clearTimeout(timeoutId)
+      if (fabricCanvasRef.current) {
+        fabricCanvasRef.current.dispose()
+        fabricCanvasRef.current = null
+      }
     }
-  }, [])
+  }, [CANVAS_WIDTH, CANVAS_HEIGHT])
 
   // Update background when template changes
   useEffect(() => {
@@ -122,10 +138,19 @@ const ThumbnailCanvas = forwardRef(({ imageUrl, selectedTemplate, titleText, sub
       const template = selectedTemplate || {}
       const textConfig = template.text?.title || {}
 
+      // Adjust position based on format (scale from 16:9 base to current format)
+      const baseWidth = 1280
+      const baseHeight = 720
+      const scaleX = CANVAS_WIDTH / baseWidth
+      const scaleY = CANVAS_HEIGHT / baseHeight
+
+      const posX = textConfig.position?.x ? textConfig.position.x * scaleX : CANVAS_WIDTH / 2
+      const posY = textConfig.position?.y ? textConfig.position.y * scaleY : CANVAS_HEIGHT * 0.4
+
       const text = new fabric.Text(titleText.toUpperCase(), {
         name: 'title',
-        left: textConfig.position?.x || CANVAS_WIDTH / 2,
-        top: textConfig.position?.y || 300,
+        left: posX,
+        top: posY,
         fontFamily: fontConfig?.titleFont || textConfig.font || 'Bebas Neue',
         fontSize: fontConfig?.titleSize || textConfig.size || 72,
         fill: textConfig.color || '#ECF0F1',
@@ -160,7 +185,7 @@ const ThumbnailCanvas = forwardRef(({ imageUrl, selectedTemplate, titleText, sub
       canvas.bringToFront(text)
       canvas.renderAll()
     }
-  }, [titleText, selectedTemplate, fontConfig, isReady])
+  }, [titleText, selectedTemplate, fontConfig, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
 
   // Add/update subtitle text
   useEffect(() => {
@@ -180,10 +205,19 @@ const ThumbnailCanvas = forwardRef(({ imageUrl, selectedTemplate, titleText, sub
       const template = selectedTemplate || {}
       const textConfig = template.text?.subtitle || {}
 
+      // Adjust position based on format (scale from 16:9 base to current format)
+      const baseWidth = 1280
+      const baseHeight = 720
+      const scaleX = CANVAS_WIDTH / baseWidth
+      const scaleY = CANVAS_HEIGHT / baseHeight
+
+      const posX = textConfig.position?.x ? textConfig.position.x * scaleX : CANVAS_WIDTH / 2
+      const posY = textConfig.position?.y ? textConfig.position.y * scaleY : CANVAS_HEIGHT * 0.53
+
       const text = new fabric.Text(subtitleText, {
         name: 'subtitle',
-        left: textConfig.position?.x || CANVAS_WIDTH / 2,
-        top: textConfig.position?.y || 380,
+        left: posX,
+        top: posY,
         fontFamily: fontConfig?.subtitleFont || textConfig.font || 'Montserrat',
         fontSize: fontConfig?.subtitleSize || textConfig.size || 36,
         fill: textConfig.color || '#E67E22',
@@ -218,7 +252,7 @@ const ThumbnailCanvas = forwardRef(({ imageUrl, selectedTemplate, titleText, sub
       canvas.bringToFront(text)
       canvas.renderAll()
     }
-  }, [subtitleText, selectedTemplate, fontConfig, isReady])
+  }, [subtitleText, selectedTemplate, fontConfig, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
 
   // Add/update AI Generated badge
   useEffect(() => {
@@ -241,7 +275,7 @@ const ThumbnailCanvas = forwardRef(({ imageUrl, selectedTemplate, titleText, sub
       if (styleData && positionData) {
         const style = styleData.style
 
-        // Create badge text with icon
+        // Create badge text with icon first to know its size
         const badgeText = style.icon
           ? `${style.icon} ${badgeConfig.text}`
           : badgeConfig.text
@@ -259,21 +293,59 @@ const ThumbnailCanvas = forwardRef(({ imageUrl, selectedTemplate, titleText, sub
         const bgWidth = textObj.width + padding * 2
         const bgHeight = textObj.height + padding
 
+        // Determine background color based on transparency setting
+        let backgroundFill
+        if (badgeConfig.transparentBg) {
+          backgroundFill = 'rgba(0, 0, 0, 0)' // Fully transparent
+        } else if (badgeConfig.backgroundColor) {
+          backgroundFill = badgeConfig.backgroundColor
+        } else {
+          backgroundFill = style.background.includes('gradient') ? '#667eea' : style.background
+        }
+
         const background = new fabric.Rect({
           width: bgWidth,
           height: bgHeight,
-          fill: style.background.includes('gradient') ? '#667eea' : style.background,
-          stroke: style.border.split(' ')[1], // Extract color from border
-          strokeWidth: parseInt(style.border.split(' ')[0]) || 2,
+          fill: backgroundFill,
+          stroke: 'transparent',
+          strokeWidth: 0,
           rx: parseInt(style.borderRadius) || 0,
           ry: parseInt(style.borderRadius) || 0
         })
 
+        // Smart positioning based on position ID
+        const margin = 20
+        let badgePosX, badgePosY
+
+        switch (badgeConfig.position) {
+          case 'top-right':
+            badgePosX = CANVAS_WIDTH - bgWidth - margin
+            badgePosY = margin
+            break
+          case 'top-left':
+            badgePosX = margin
+            badgePosY = margin
+            break
+          case 'bottom-right':
+            badgePosX = CANVAS_WIDTH - bgWidth - margin
+            badgePosY = CANVAS_HEIGHT - bgHeight - margin
+            break
+          case 'bottom-left':
+            badgePosX = margin
+            badgePosY = CANVAS_HEIGHT - bgHeight - margin
+            break
+          default:
+            badgePosX = margin
+            badgePosY = margin
+        }
+
         // Create group for badge
         const badgeGroup = new fabric.Group([background, textObj], {
           name: 'badge',
-          left: positionData.coords.x,
-          top: positionData.coords.y,
+          left: badgePosX,
+          top: badgePosY,
+          originX: 'left',
+          originY: 'top',
           selectable: true,
           hasControls: true
         })
@@ -295,7 +367,7 @@ const ThumbnailCanvas = forwardRef(({ imageUrl, selectedTemplate, titleText, sub
         canvas.renderAll()
       }
     }
-  }, [badgeConfig, isReady])
+  }, [badgeConfig, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
 
   // Expose canvas instance to parent component
   useImperativeHandle(ref, () => ({
@@ -306,9 +378,14 @@ const ThumbnailCanvas = forwardRef(({ imageUrl, selectedTemplate, titleText, sub
   }))
 
   return (
-    <div className="flex items-center justify-center">
-      <div className="bg-gray-900 rounded-lg shadow-2xl overflow-hidden">
-        <canvas ref={canvasRef} />
+    <div className="w-full h-full flex items-center justify-center p-4">
+      <div className="bg-gray-900 rounded-lg shadow-2xl">
+        <canvas
+          ref={canvasRef}
+          style={{
+            display: 'block'
+          }}
+        />
       </div>
     </div>
   )

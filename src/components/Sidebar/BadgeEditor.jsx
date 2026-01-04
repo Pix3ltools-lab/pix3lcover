@@ -6,6 +6,8 @@ function BadgeEditor({ badgeConfig, onBadgeChange }) {
   const [selectedStyle, setSelectedStyle] = useState(badgeConfig?.style || 'futuristic')
   const [selectedPosition, setSelectedPosition] = useState(badgeConfig?.position || 'top-right')
   const [customText, setCustomText] = useState(badgeConfig?.text || 'AI Generated')
+  const [isTransparent, setIsTransparent] = useState(badgeConfig?.transparentBg !== false)
+  const [backgroundColor, setBackgroundColor] = useState(badgeConfig?.backgroundColor || '#667eea')
 
   const handleToggle = () => {
     const newEnabled = !isEnabled
@@ -28,6 +30,17 @@ function BadgeEditor({ badgeConfig, onBadgeChange }) {
     updateBadge({ text })
   }
 
+  const handleTransparentToggle = () => {
+    const newTransparent = !isTransparent
+    setIsTransparent(newTransparent)
+    updateBadge({ transparentBg: newTransparent })
+  }
+
+  const handleBackgroundColorChange = (color) => {
+    setBackgroundColor(color)
+    updateBadge({ backgroundColor: color })
+  }
+
   const updateBadge = (updates) => {
     if (onBadgeChange) {
       onBadgeChange({
@@ -35,6 +48,8 @@ function BadgeEditor({ badgeConfig, onBadgeChange }) {
         style: selectedStyle,
         position: selectedPosition,
         text: customText,
+        transparentBg: isTransparent,
+        backgroundColor: backgroundColor,
         ...updates
       })
     }
@@ -140,6 +155,50 @@ function BadgeEditor({ badgeConfig, onBadgeChange }) {
             </div>
           </div>
 
+          {/* Background Options */}
+          <div>
+            <label className="block text-sm mb-2 text-gray-400">
+              Background
+            </label>
+            <div className="space-y-2">
+              <button
+                onClick={handleTransparentToggle}
+                className={`
+                  w-full px-3 py-2 rounded text-sm font-medium transition-colors text-left
+                  ${isTransparent
+                    ? 'bg-[#E67E22] text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }
+                `}
+              >
+                {isTransparent ? '✓ Transparent Background' : 'Transparent Background'}
+              </button>
+
+              {!isTransparent && (
+                <div>
+                  <label className="block text-xs mb-1 text-gray-500">
+                    Custom Color
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="color"
+                      value={backgroundColor}
+                      onChange={(e) => handleBackgroundColorChange(e.target.value)}
+                      className="h-10 w-16 rounded cursor-pointer bg-gray-700 border border-gray-600"
+                    />
+                    <input
+                      type="text"
+                      value={backgroundColor}
+                      onChange={(e) => handleBackgroundColorChange(e.target.value)}
+                      placeholder="#667eea"
+                      className="flex-1 bg-gray-700 px-3 py-2 rounded text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#E67E22]"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Preview */}
           {selectedStyleData && (
             <div className="border border-gray-700 rounded p-3">
@@ -147,7 +206,7 @@ function BadgeEditor({ badgeConfig, onBadgeChange }) {
               <div
                 className="inline-block"
                 style={{
-                  background: selectedStyleData.style.background,
+                  background: isTransparent ? 'transparent' : backgroundColor,
                   border: selectedStyleData.style.border,
                   borderRadius: selectedStyleData.style.borderRadius,
                   padding: selectedStyleData.style.padding,

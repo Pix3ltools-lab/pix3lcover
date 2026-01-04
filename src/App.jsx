@@ -11,6 +11,7 @@ import { exportCanvas } from './utils/exportUtils'
 function App() {
   const [uploadedImage, setUploadedImage] = useState(null)
   const [selectedTemplate, setSelectedTemplate] = useState(templates[0]) // Default to first template
+  const [format, setFormat] = useState('16:9') // '16:9' or '9:16'
   const [titleText, setTitleText] = useState('')
   const [subtitleText, setSubtitleText] = useState('')
   const [fontConfig, setFontConfig] = useState({
@@ -23,7 +24,9 @@ function App() {
     enabled: false,
     style: 'futuristic',
     position: 'top-right',
-    text: 'AI Generated'
+    text: 'AI Generated',
+    transparentBg: true,
+    backgroundColor: '#667eea'
   })
   const canvasRef = useRef(null)
 
@@ -59,13 +62,13 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] flex flex-col">
+    <div className="h-screen bg-[#1a1a1a] flex flex-col">
       {/* Header */}
-      <header className="bg-[#2a2a2a] border-b border-gray-700 px-6 py-4">
+      <header className="bg-[#2a2a2a] border-b border-gray-700 px-6 py-4 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="text-3xl">🎸</div>
           <h1 className="text-2xl font-bold text-white">
-            Blues Rock Thumbnail Generator
+            Music Video Thumbnail Generator
           </h1>
         </div>
       </header>
@@ -77,6 +80,46 @@ function App() {
           <div className="p-6 space-y-6">
             {/* Upload Panel */}
             <UploadPanel onImageUpload={handleImageUpload} />
+
+            {/* Format Selector */}
+            <section>
+              <h2 className="text-lg font-semibold mb-3 text-[#E67E22]">
+                Format
+              </h2>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setFormat('16:9')}
+                  className={`
+                    px-4 py-3 rounded text-sm font-medium transition-colors
+                    ${format === '16:9'
+                      ? 'bg-[#E67E22] text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }
+                  `}
+                >
+                  <div className="font-semibold">16:9</div>
+                  <div className="text-xs opacity-75 mt-1">Landscape</div>
+                  <div className="text-xs opacity-75">1280x720</div>
+                </button>
+                <button
+                  onClick={() => setFormat('9:16')}
+                  className={`
+                    px-4 py-3 rounded text-sm font-medium transition-colors
+                    ${format === '9:16'
+                      ? 'bg-[#E67E22] text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }
+                  `}
+                >
+                  <div className="font-semibold">9:16</div>
+                  <div className="text-xs opacity-75 mt-1">Portrait</div>
+                  <div className="text-xs opacity-75">720x1280</div>
+                </button>
+              </div>
+              <div className="text-xs text-gray-500 mt-2">
+                {format === '16:9' ? '📺 Standard YouTube videos' : '📱 YouTube Shorts'}
+              </div>
+            </section>
 
             {/* Templates Panel */}
             <TemplateSelector
@@ -141,6 +184,7 @@ function App() {
         <main className="flex-1 bg-[#1a1a1a] flex items-center justify-center p-8">
           <ThumbnailCanvas
             ref={canvasRef}
+            format={format}
             imageUrl={uploadedImage}
             selectedTemplate={selectedTemplate}
             titleText={titleText}
