@@ -1,0 +1,131 @@
+/**
+ * LocalStorage utility functions for saving and loading projects
+ */
+
+const STORAGE_KEY = 'mvtg_projects' // Music Video Thumbnail Generator
+
+/**
+ * Get all saved projects from localStorage
+ */
+export const getAllProjects = () => {
+  try {
+    const projectsJson = localStorage.getItem(STORAGE_KEY)
+    return projectsJson ? JSON.parse(projectsJson) : []
+  } catch (error) {
+    console.error('Error loading projects:', error)
+    return []
+  }
+}
+
+/**
+ * Save a project to localStorage
+ */
+export const saveProject = (project) => {
+  try {
+    const projects = getAllProjects()
+
+    // Check if project with same id exists (update) or create new
+    const existingIndex = projects.findIndex(p => p.id === project.id)
+
+    if (existingIndex >= 0) {
+      // Update existing project
+      projects[existingIndex] = {
+        ...project,
+        updatedAt: new Date().toISOString()
+      }
+    } else {
+      // Add new project
+      projects.push({
+        ...project,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      })
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects))
+    return true
+  } catch (error) {
+    console.error('Error saving project:', error)
+    return false
+  }
+}
+
+/**
+ * Load a project by ID
+ */
+export const loadProject = (projectId) => {
+  try {
+    const projects = getAllProjects()
+    return projects.find(p => p.id === projectId)
+  } catch (error) {
+    console.error('Error loading project:', error)
+    return null
+  }
+}
+
+/**
+ * Delete a project by ID
+ */
+export const deleteProject = (projectId) => {
+  try {
+    const projects = getAllProjects()
+    const filtered = projects.filter(p => p.id !== projectId)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered))
+    return true
+  } catch (error) {
+    console.error('Error deleting project:', error)
+    return false
+  }
+}
+
+/**
+ * Generate a unique project ID
+ */
+export const generateProjectId = () => {
+  return `project_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+/**
+ * Create a project object from current state
+ * Note: We save only the template ID, not the entire template object
+ */
+export const createProjectFromState = (state, projectName) => {
+  return {
+    id: state.id || generateProjectId(),
+    name: projectName || `Project ${new Date().toLocaleDateString()}`,
+    format: state.format,
+    uploadedImage: state.uploadedImage,
+    templateId: state.selectedTemplate?.id || 'classic-blues', // Save only template ID
+    titleText: state.titleText,
+    subtitleText: state.subtitleText,
+    fontConfig: state.fontConfig,
+    textColors: state.textColors,
+    textPositions: state.textPositions,
+    badgeConfig: state.badgeConfig
+  }
+}
+
+/**
+ * Get storage usage info
+ */
+export const getStorageInfo = () => {
+  try {
+    const projects = getAllProjects()
+    const storageJson = localStorage.getItem(STORAGE_KEY)
+    const sizeInBytes = storageJson ? new Blob([storageJson]).size : 0
+    const sizeInKB = (sizeInBytes / 1024).toFixed(2)
+
+    return {
+      projectCount: projects.length,
+      sizeInKB,
+      sizeInBytes
+    }
+  } catch (error) {
+    console.error('Error getting storage info:', error)
+    return {
+      projectCount: 0,
+      sizeInKB: '0',
+      sizeInBytes: 0
+    }
+  }
+}

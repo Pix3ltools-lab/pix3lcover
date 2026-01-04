@@ -63,6 +63,26 @@ export const fonts = [
     preview: 'Blues Rock Music',
     bestFor: 'Subtitles, secondary text',
     recommended: false
+  },
+  {
+    id: 'rajdhani',
+    name: 'Rajdhani',
+    family: 'Rajdhani',
+    category: 'sans-serif',
+    description: 'Modern, geometric, cinematic',
+    preview: 'REDD SIRIEN',
+    bestFor: 'Cinematic titles, modern elegance',
+    recommended: true
+  },
+  {
+    id: 'cinzel',
+    name: 'Cinzel',
+    family: 'Cinzel',
+    category: 'serif',
+    description: 'Classic serif, elegant, cinematic',
+    preview: 'RED-SIREN',
+    bestFor: 'Movie posters, elegant titles, classic aesthetics',
+    recommended: true
   }
 ]
 

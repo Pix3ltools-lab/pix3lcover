@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 're
 import { fabric } from 'fabric'
 import badgeStyles, { badgePositions } from '../../data/badgeStyles'
 
-const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleText, subtitleText, fontConfig, textColors, badgeConfig }, ref) => {
+const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleText, subtitleText, fontConfig, textColors, textPositions, onTextPositionChange, badgeConfig }, ref) => {
   const canvasRef = useRef(null)
   const fabricCanvasRef = useRef(null)
   const [isReady, setIsReady] = useState(false)
@@ -48,6 +48,35 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
       }
     }
   }, [CANVAS_WIDTH, CANVAS_HEIGHT])
+
+  // Add listener for text position changes
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isReady || !onTextPositionChange) return
+
+    const canvas = fabricCanvasRef.current
+
+    const handleObjectModified = (e) => {
+      const obj = e.target
+      if (obj && (obj.name === 'title' || obj.name === 'subtitle')) {
+        // Get current positions from canvas
+        const titleObj = canvas.getObjects().find(o => o.name === 'title')
+        const subtitleObj = canvas.getObjects().find(o => o.name === 'subtitle')
+
+        const newPositions = {
+          title: titleObj ? { left: titleObj.left, top: titleObj.top } : textPositions?.title || null,
+          subtitle: subtitleObj ? { left: subtitleObj.left, top: subtitleObj.top } : textPositions?.subtitle || null
+        }
+
+        onTextPositionChange(newPositions)
+      }
+    }
+
+    canvas.on('object:modified', handleObjectModified)
+
+    return () => {
+      canvas.off('object:modified', handleObjectModified)
+    }
+  }, [isReady, onTextPositionChange, textPositions])
 
   // Update background when template changes
   useEffect(() => {
@@ -138,14 +167,21 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
       const template = selectedTemplate || {}
       const textConfig = template.text?.title || {}
 
-      // Adjust position based on format (scale from 16:9 base to current format)
-      const baseWidth = 1280
-      const baseHeight = 720
-      const scaleX = CANVAS_WIDTH / baseWidth
-      const scaleY = CANVAS_HEIGHT / baseHeight
+      // Use saved position if available, otherwise calculate from template
+      let posX, posY
+      if (textPositions?.title) {
+        posX = textPositions.title.left
+        posY = textPositions.title.top
+      } else {
+        // Adjust position based on format (scale from 16:9 base to current format)
+        const baseWidth = 1280
+        const baseHeight = 720
+        const scaleX = CANVAS_WIDTH / baseWidth
+        const scaleY = CANVAS_HEIGHT / baseHeight
 
-      const posX = textConfig.position?.x ? textConfig.position.x * scaleX : CANVAS_WIDTH / 2
-      const posY = textConfig.position?.y ? textConfig.position.y * scaleY : CANVAS_HEIGHT * 0.4
+        posX = textConfig.position?.x ? textConfig.position.x * scaleX : CANVAS_WIDTH / 2
+        posY = textConfig.position?.y ? textConfig.position.y * scaleY : CANVAS_HEIGHT * 0.4
+      }
 
       const text = new fabric.Text(titleText.toUpperCase(), {
         name: 'title',
@@ -205,14 +241,21 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
       const template = selectedTemplate || {}
       const textConfig = template.text?.subtitle || {}
 
-      // Adjust position based on format (scale from 16:9 base to current format)
-      const baseWidth = 1280
-      const baseHeight = 720
-      const scaleX = CANVAS_WIDTH / baseWidth
-      const scaleY = CANVAS_HEIGHT / baseHeight
+      // Use saved position if available, otherwise calculate from template
+      let posX, posY
+      if (textPositions?.subtitle) {
+        posX = textPositions.subtitle.left
+        posY = textPositions.subtitle.top
+      } else {
+        // Adjust position based on format (scale from 16:9 base to current format)
+        const baseWidth = 1280
+        const baseHeight = 720
+        const scaleX = CANVAS_WIDTH / baseWidth
+        const scaleY = CANVAS_HEIGHT / baseHeight
 
-      const posX = textConfig.position?.x ? textConfig.position.x * scaleX : CANVAS_WIDTH / 2
-      const posY = textConfig.position?.y ? textConfig.position.y * scaleY : CANVAS_HEIGHT * 0.53
+        posX = textConfig.position?.x ? textConfig.position.x * scaleX : CANVAS_WIDTH / 2
+        posY = textConfig.position?.y ? textConfig.position.y * scaleY : CANVAS_HEIGHT * 0.53
+      }
 
       const text = new fabric.Text(subtitleText, {
         name: 'subtitle',

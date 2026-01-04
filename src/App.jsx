@@ -5,11 +5,14 @@ import FontSelector from './components/Sidebar/FontSelector'
 import TextColorPicker from './components/Sidebar/TextColorPicker'
 import BadgeEditor from './components/Sidebar/BadgeEditor'
 import ExportPanel from './components/Sidebar/ExportPanel'
+import ProjectManager from './components/Sidebar/ProjectManager'
 import ThumbnailCanvas from './components/Canvas/ThumbnailCanvas'
 import templates from './data/templates'
 import { exportCanvas } from './utils/exportUtils'
+import { saveProject, loadProject, createProjectFromState } from './utils/storageUtils'
 
 function App() {
+  const [currentProjectId, setCurrentProjectId] = useState(null)
   const [uploadedImage, setUploadedImage] = useState(null)
   const [selectedTemplate, setSelectedTemplate] = useState(templates[0]) // Default to first template
   const [format, setFormat] = useState('16:9') // '16:9' or '9:16'
@@ -24,6 +27,10 @@ function App() {
   const [textColors, setTextColors] = useState({
     titleColor: null, // null = use template default
     subtitleColor: null
+  })
+  const [textPositions, setTextPositions] = useState({
+    title: null, // null = use template default
+    subtitle: null
   })
   const [badgeConfig, setBadgeConfig] = useState({
     enabled: false,
@@ -53,6 +60,85 @@ function App() {
 
   const handleTextColorChange = (newTextColors) => {
     setTextColors(newTextColors)
+  }
+
+  const handleTextPositionChange = (newTextPositions) => {
+    setTextPositions(newTextPositions)
+  }
+
+  const handleSaveProject = (projectName) => {
+    const currentState = {
+      id: currentProjectId,
+      format,
+      uploadedImage,
+      selectedTemplate,
+      titleText,
+      subtitleText,
+      fontConfig,
+      textColors,
+      textPositions,
+      badgeConfig
+    }
+
+    const project = createProjectFromState(currentState, projectName)
+    const success = saveProject(project)
+
+    if (success) {
+      setCurrentProjectId(project.id)
+      alert(`Project "${project.name}" saved successfully!`)
+    } else {
+      alert('Failed to save project. Please try again.')
+    }
+  }
+
+  const handleLoadProject = (project) => {
+    // Find the template by ID from the templates array
+    const template = templates.find(t => t.id === project.templateId) || templates[0]
+
+    setCurrentProjectId(project.id)
+    setFormat(project.format)
+    setUploadedImage(project.uploadedImage)
+    setSelectedTemplate(template) // Use template from templates array
+    setTitleText(project.titleText)
+    setSubtitleText(project.subtitleText)
+    setFontConfig(project.fontConfig)
+    setTextColors(project.textColors)
+    setTextPositions(project.textPositions || { title: null, subtitle: null })
+    setBadgeConfig(project.badgeConfig)
+    alert(`Project "${project.name}" loaded successfully!`)
+  }
+
+  const handleNewProject = () => {
+    if (confirm('Create new project? Any unsaved changes will be lost.')) {
+      setCurrentProjectId(null)
+      setFormat('16:9')
+      setUploadedImage(null)
+      setSelectedTemplate(templates[0])
+      setTitleText('')
+      setSubtitleText('')
+      setFontConfig({
+        titleFont: 'Bebas Neue',
+        subtitleFont: 'Montserrat',
+        titleSize: 72,
+        subtitleSize: 36
+      })
+      setTextColors({
+        titleColor: null,
+        subtitleColor: null
+      })
+      setTextPositions({
+        title: null,
+        subtitle: null
+      })
+      setBadgeConfig({
+        enabled: false,
+        style: 'futuristic',
+        position: 'top-right',
+        text: 'AI Generated',
+        transparentBg: true,
+        backgroundColor: '#667eea'
+      })
+    }
   }
 
   const handleExport = (options) => {
@@ -87,6 +173,14 @@ function App() {
         {/* Sidebar */}
         <aside className="w-80 bg-[#2a2a2a] border-r border-gray-700 overflow-y-auto">
           <div className="p-6 space-y-6">
+            {/* Project Manager */}
+            <ProjectManager
+              currentProjectId={currentProjectId}
+              onSave={handleSaveProject}
+              onLoad={handleLoadProject}
+              onNew={handleNewProject}
+            />
+
             {/* Upload Panel */}
             <UploadPanel onImageUpload={handleImageUpload} />
 
@@ -208,6 +302,8 @@ function App() {
             subtitleText={subtitleText}
             fontConfig={fontConfig}
             textColors={textColors}
+            textPositions={textPositions}
+            onTextPositionChange={handleTextPositionChange}
             badgeConfig={badgeConfig}
           />
         </main>
