@@ -12,10 +12,9 @@ A web application to create professional YouTube thumbnails for AI-generated blu
 - 🎯 **Interactive Canvas**: Drag and resize elements (1280x720px)
 - 📥 **Export System**: Download as JPG (80-100% quality) or PNG
 - 🎨 **Color Palettes**: 4 pre-configured blues rock color schemes
+- 🤖 **AI Generated Badge**: 4 styles, customizable text, draggable
 
 ### 🚧 Planned (Not Yet Implemented)
-
-- 🤖 **AI Generated Badge**: Multiple styles to mark AI content
 - 🎨 **Color Picker**: Custom color selection for text
 - 🔤 **Font Selector**: UI to change fonts
 - 💾 **Project Management**: Save/load projects to localStorage
@@ -105,8 +104,8 @@ src/
 - [x] Export functionality (JPG/PNG with quality control)
 - [x] Interactive canvas (drag, resize elements)
 
-### 🚧 Phase 2: Enhanced Features (Next)
-- [ ] AI Generated badge system
+### 🚧 Phase 2: Enhanced Features (In Progress)
+- [x] AI Generated badge system (4 styles, customizable, draggable)
 - [ ] Font selector UI
 - [ ] Color picker for text customization
 - [ ] Save/load projects (localStorage)

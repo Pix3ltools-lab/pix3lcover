@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import UploadPanel from './components/Sidebar/UploadPanel'
 import TemplateSelector from './components/Sidebar/TemplateSelector'
+import FontSelector from './components/Sidebar/FontSelector'
+import BadgeEditor from './components/Sidebar/BadgeEditor'
 import ExportPanel from './components/Sidebar/ExportPanel'
 import ThumbnailCanvas from './components/Canvas/ThumbnailCanvas'
 import templates from './data/templates'
@@ -11,6 +13,18 @@ function App() {
   const [selectedTemplate, setSelectedTemplate] = useState(templates[0]) // Default to first template
   const [titleText, setTitleText] = useState('')
   const [subtitleText, setSubtitleText] = useState('')
+  const [fontConfig, setFontConfig] = useState({
+    titleFont: 'Bebas Neue',
+    subtitleFont: 'Montserrat',
+    titleSize: 72,
+    subtitleSize: 36
+  })
+  const [badgeConfig, setBadgeConfig] = useState({
+    enabled: false,
+    style: 'futuristic',
+    position: 'top-right',
+    text: 'AI Generated'
+  })
   const canvasRef = useRef(null)
 
   const handleImageUpload = (imageUrl) => {
@@ -19,6 +33,14 @@ function App() {
 
   const handleTemplateSelect = (template) => {
     setSelectedTemplate(template)
+  }
+
+  const handleFontChange = (newFontConfig) => {
+    setFontConfig(newFontConfig)
+  }
+
+  const handleBadgeChange = (newBadgeConfig) => {
+    setBadgeConfig(newBadgeConfig)
   }
 
   const handleExport = (options) => {
@@ -95,6 +117,21 @@ function App() {
               </div>
             </section>
 
+            {/* Font Selector */}
+            <FontSelector
+              titleFont={fontConfig.titleFont}
+              subtitleFont={fontConfig.subtitleFont}
+              titleSize={fontConfig.titleSize}
+              subtitleSize={fontConfig.subtitleSize}
+              onFontChange={handleFontChange}
+            />
+
+            {/* Badge Panel */}
+            <BadgeEditor
+              badgeConfig={badgeConfig}
+              onBadgeChange={handleBadgeChange}
+            />
+
             {/* Export Panel */}
             <ExportPanel onExport={handleExport} />
           </div>
@@ -108,6 +145,8 @@ function App() {
             selectedTemplate={selectedTemplate}
             titleText={titleText}
             subtitleText={subtitleText}
+            fontConfig={fontConfig}
+            badgeConfig={badgeConfig}
           />
         </main>
       </div>
