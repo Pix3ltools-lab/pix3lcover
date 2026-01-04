@@ -124,7 +124,7 @@ Create 6 professional music video templates:
   - Same controls as title
   - Auto-positioned below title
 
-- **Available fonts (12 total):**
+- **Available fonts (13 total):**
   - Bebas Neue (bold, impactful)
   - Oswald (modern, clean)
   - Playfair Display (elegant serif)
@@ -133,10 +133,11 @@ Create 6 professional music video templates:
   - Roboto Condensed (readable, modern)
   - Rajdhani (geometric, cinematic)
   - Cinzel (classic serif, movie poster style)
-  - **Bodoni Moda** (high fashion, luxury editorial) - NEW
-  - **Cormorant** (refined Italian/French elegance) - NEW
-  - **Jost** (geometric clean, luxury modern) - NEW
-  - **Abril Fatface** (bold display, fashion editorial) - NEW
+  - **Bodoni Moda** (high fashion, luxury editorial)
+  - **Cormorant** (refined Italian/French elegance)
+  - **Jost** (geometric clean, luxury modern)
+  - **Abril Fatface** (bold display, fashion editorial)
+  - **EB Garamond** (Victoria's Secret style, classic luxury) - NEW
 
 #### 4. AI Generated Badge
 - Multiple badge styles:
@@ -342,10 +343,11 @@ Pre-configured palettes for blues rock:
 6. **Roboto Condensed** - Readable, modern (Google Fonts)
 7. **Rajdhani** - Geometric, cinematic (Google Fonts)
 8. **Cinzel** - Classic serif, movie poster style (Google Fonts)
-9. **Bodoni Moda** - High fashion, luxury editorial (Google Fonts) - NEW
-10. **Cormorant** - Refined Italian/French elegance (Google Fonts) - NEW
-11. **Jost** - Geometric clean, luxury modern (Google Fonts) - NEW
-12. **Abril Fatface** - Bold display, fashion editorial (Google Fonts) - NEW
+9. **Bodoni Moda** - High fashion, luxury editorial (Google Fonts)
+10. **Cormorant** - Refined Italian/French elegance (Google Fonts)
+11. **Jost** - Geometric clean, luxury modern (Google Fonts)
+12. **Abril Fatface** - Bold display, fashion editorial (Google Fonts)
+13. **EB Garamond** - Victoria's Secret style, classic luxury (Google Fonts) - NEW
 
 ### Graphic Elements
 - Guitar silhouette SVG

@@ -10,7 +10,7 @@ A web application to create professional YouTube thumbnails for AI-generated mus
 - 📐 **Dual Format Support**: 16:9 landscape (1280x720) and 9:16 portrait (720x1280) for YouTube Shorts
 - 🎨 **6 Professional Templates**: Music-themed designs including Cinematic Box with full-width text backgrounds
 - ✍️ **Text Editing**: Title and subtitle with customizable fonts, colors, and effects
-- 🔤 **Font Selector**: Choose from 12 Google Fonts (including fashion fonts: Bodoni Moda, Cormorant, Abril Fatface) with size controls
+- 🔤 **Font Selector**: Choose from 13 Google Fonts (including luxury fonts: EB Garamond, Bodoni Moda, Cormorant) with size controls
 - 🎨 **Color Picker**: Custom color selection for title and subtitle text with preset colors
 - 🎯 **Interactive Canvas**: Drag and resize elements, format-aware positioning with persistent positions
 - 🤖 **AI Generated Badge**: 4 styles, transparent or custom background, smart positioning across formats
@@ -28,7 +28,7 @@ A web application to create professional YouTube thumbnails for AI-generated mus
 - **Frontend**: React 18 + Vite 6
 - **Styling**: Tailwind CSS 3.4
 - **Canvas**: Fabric.js 5.3
-- **Fonts**: Google Fonts (12 total: Bebas Neue, Oswald, Playfair Display, Montserrat, Anton, Roboto Condensed, Rajdhani, Cinzel, Bodoni Moda, Cormorant, Jost, Abril Fatface)
+- **Fonts**: Google Fonts (13 total: Bebas Neue, Oswald, Playfair Display, Montserrat, Anton, Roboto Condensed, Rajdhani, Cinzel, Bodoni Moda, Cormorant, Jost, Abril Fatface, EB Garamond)
 - **Storage**: LocalStorage (project persistence)
 - **Deployment**: Vercel (ready)
 
@@ -101,7 +101,7 @@ src/
 │   └── storageUtils.js# localStorage management
 ├── data/              # Static data
 │   ├── templates.js   # 6 thumbnail templates
-│   ├── fonts.js       # 12 Google Fonts (including fashion collection)
+│   ├── fonts.js       # 13 Google Fonts (luxury/fashion collection)
 │   └── badgeStyles.js # Badge style definitions
 ├── styles/            # Global styles
 ├── App.jsx            # Main app component

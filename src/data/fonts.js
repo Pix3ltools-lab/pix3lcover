@@ -123,6 +123,16 @@ export const fonts = [
     preview: 'FASHION',
     bestFor: 'Statement titles, magazine covers, dramatic impact',
     recommended: true
+  },
+  {
+    id: 'eb-garamond',
+    name: 'EB Garamond',
+    family: 'EB Garamond',
+    category: 'serif',
+    description: 'Classic elegant serif, Victoria\'s Secret style',
+    preview: 'Luxury',
+    bestFor: 'Elegant luxury titles, sophisticated branding',
+    recommended: true
   }
 ]
 
