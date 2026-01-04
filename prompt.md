@@ -68,7 +68,7 @@ Future Tech (Phase 3):
   - Paste from clipboard
 
 #### 2. Template System
-Create 5 professional blues rock templates:
+Create 6 professional music video templates:
 
 **Template 1: "Classic Blues"**
 - Dark blue background (#1E3A5F)
@@ -105,6 +105,13 @@ Create 5 professional blues rock templates:
 - Stage lights effect
 - Layout: Dramatic diagonal composition
 
+**Template 6: "Cinematic Box"** (NEW)
+- Black background with full-width text box
+- Gold/elegant color scheme (#D4AF37)
+- Cinzel serif font for movie poster aesthetic
+- Full-width black bar behind title text
+- Layout: Bottom-positioned title with cinematic feel
+
 #### 3. Text Overlay System
 - **Title field** (main text, 3-6 words max)
   - Font size control
@@ -117,12 +124,15 @@ Create 5 professional blues rock templates:
   - Same controls as title
   - Auto-positioned below title
 
-- **Recommended fonts:**
+- **Available fonts (8 total):**
   - Bebas Neue (bold, impactful)
   - Oswald (modern, clean)
   - Playfair Display (elegant serif)
   - Montserrat (versatile sans-serif)
   - Anton (condensed, powerful)
+  - Roboto Condensed (readable, modern)
+  - Rajdhani (geometric, cinematic) - NEW
+  - Cinzel (classic serif, movie poster style) - NEW
 
 #### 4. AI Generated Badge
 - Multiple badge styles:
@@ -326,6 +336,8 @@ Pre-configured palettes for blues rock:
 4. **Montserrat** - Clean sans-serif (Google Fonts)
 5. **Anton** - Condensed, impactful (Google Fonts)
 6. **Roboto Condensed** - Readable, modern (Google Fonts)
+7. **Rajdhani** - Geometric, cinematic (Google Fonts) - NEW
+8. **Cinzel** - Classic serif, movie poster style (Google Fonts) - NEW
 
 ### Graphic Elements
 - Guitar silhouette SVG
@@ -538,14 +550,15 @@ PRO TIER - $19/month:
 - [ ] Deploy to Vercel
 
 ### Week 2: Core Features (✅ Completed)
-- [x] Template system (all 5 templates)
-- [x] Text editing system (title + subtitle)
-- [x] Font selector UI (6 Google Fonts, size controls)
-- [x] Color palette selector (data structure ready)
+- [x] Template system (6 templates including Cinematic Box)
+- [x] Text editing system (title + subtitle with persistent positions)
+- [x] Font selector UI (8 Google Fonts including Rajdhani and Cinzel, size controls)
+- [x] Color picker (custom colors for title and subtitle with presets)
 - [x] Badge system (4 styles, customizable, transparent/custom background)
 - [x] Export functionality (JPG/PNG with quality control)
 - [x] Dual format support (16:9 landscape + 9:16 portrait)
-- [ ] Basic save/load (localStorage)
+- [x] Save/load system (localStorage with project manager)
+- [x] Text background feature (full-width box for cinematic effect)
 
 ### Week 3: Polish & Refinement
 - [ ] Undo/Redo
@@ -908,6 +921,41 @@ VITE_FIREBASE_CONFIG=...
 - [ ] Email sequences configured
 - [ ] Analytics tracking implemented
 - [ ] Support system in place
+
+---
+
+## Recent Feature Additions (January 2025)
+
+### Save/Load System
+- **ProjectManager component**: Save, load, delete, and create new projects
+- **LocalStorage persistence**: Projects saved with metadata (id, name, timestamps)
+- **Text position tracking**: Custom text positions are saved and restored
+- **Template ID reference**: Saves only template ID for consistency
+- **Storage utilities**: Dedicated storageUtils.js for all localStorage operations
+
+### New Fonts (Cinematic Styles)
+- **Rajdhani**: Modern, geometric, perfect for "REDD SIRIEN" style titles
+- **Cinzel**: Classic serif, elegant, ideal for movie poster aesthetics
+
+### Cinematic Box Template
+- **Full-width text background**: Black bar spans entire canvas width
+- **Configurable padding**: Vertical padding for text spacing
+- **Optional border**: Bottom border line for decorative accent (currently disabled)
+- **Opacity control**: Fully opaque or semi-transparent backgrounds
+- **Text background feature**: New `textBackground` property in template effects
+
+### Text Color Picker
+- **Custom colors**: Independent color selection for title and subtitle
+- **Preset colors**: 8 preset colors for quick selection
+- **Visual + hex input**: Both color picker and manual hex entry
+- **Reset to template**: Easy return to template default colors
+- **Template fallback**: null values use template defaults
+
+### Technical Improvements
+- **Text positioning**: Persistent position tracking with object:modified listener
+- **Template serialization fix**: Save template ID instead of full object
+- **Dual format support**: Smart positioning across 16:9 and 9:16 formats
+- **Fabric.js Groups**: Background + text grouped for unified movement
 
 ---
 

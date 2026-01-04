@@ -8,17 +8,19 @@ A web application to create professional YouTube thumbnails for AI-generated mus
 
 - 🖼️ **Image Upload**: Drag & drop, file upload, or paste from clipboard (Ctrl+V)
 - 📐 **Dual Format Support**: 16:9 landscape (1280x720) and 9:16 portrait (720x1280) for YouTube Shorts
-- 🎨 **5 Professional Templates**: Music-themed designs with gradients, responsive to format
-- ✍️ **Text Editing**: Title and subtitle with customizable fonts and effects
-- 🔤 **Font Selector**: Choose from 6 Google Fonts with size controls
-- 🎯 **Interactive Canvas**: Drag and resize elements, format-aware positioning
-- 🤖 **AI Generated Badge**: 4 styles, transparent or custom background, smart positioning
-- 📥 **Export System**: Download as JPG (80-100% quality) or PNG
+- 🎨 **6 Professional Templates**: Music-themed designs including Cinematic Box with full-width text backgrounds
+- ✍️ **Text Editing**: Title and subtitle with customizable fonts, colors, and effects
+- 🔤 **Font Selector**: Choose from 8 Google Fonts (including cinematic Rajdhani and Cinzel) with size controls
+- 🎨 **Color Picker**: Custom color selection for title and subtitle text with preset colors
+- 🎯 **Interactive Canvas**: Drag and resize elements, format-aware positioning with persistent positions
+- 🤖 **AI Generated Badge**: 4 styles, transparent or custom background, smart positioning across formats
+- 💾 **Project Management**: Save/load/delete projects to localStorage with metadata tracking
+- 📥 **Export System**: Download as JPG (80-100% quality) or PNG with configurable settings
 
 ### 🚧 Planned (Not Yet Implemented)
-- 🎨 **Color Picker**: Custom color selection for text
-- 💾 **Project Management**: Save/load projects to localStorage
 - ↩️ **Undo/Redo**: History stack for changes
+- 💾 **Auto-save**: Automatic project saving
+- 🖼️ **Project Gallery**: Visual preview of saved projects
 - ⌨️ **Keyboard Shortcuts**: Speed up workflow
 
 ## Tech Stack
@@ -26,8 +28,8 @@ A web application to create professional YouTube thumbnails for AI-generated mus
 - **Frontend**: React 18 + Vite 6
 - **Styling**: Tailwind CSS 3.4
 - **Canvas**: Fabric.js 5.3
-- **Fonts**: Google Fonts (Bebas Neue, Oswald, Playfair Display, Montserrat, Anton, Roboto Condensed)
-- **Storage**: LocalStorage (planned)
+- **Fonts**: Google Fonts (Bebas Neue, Oswald, Playfair Display, Montserrat, Anton, Roboto Condensed, Rajdhani, Cinzel)
+- **Storage**: LocalStorage (project persistence)
 - **Deployment**: Vercel (ready)
 
 ## Getting Started
@@ -61,16 +63,22 @@ npm run preview
 ## How to Use
 
 1. **Start the dev server**: `npm run dev`
-2. **Upload an image**: Drag & drop, click to browse, or paste (Ctrl+V)
-3. **Select a template**: Choose from 5 blues rock themed designs
-4. **Add text**: Enter title (auto-uppercase) and optional subtitle
-5. **Customize**: Drag and resize elements on the canvas
-6. **Export**: Choose format (JPG/PNG), adjust quality, and download
+2. **Choose format**: Select 16:9 (landscape) or 9:16 (portrait/Shorts)
+3. **Upload an image**: Drag & drop, click to browse, or paste (Ctrl+V)
+4. **Select a template**: Choose from 6 professional designs (including Cinematic Box)
+5. **Add text**: Enter title (auto-uppercase) and optional subtitle
+6. **Customize fonts**: Choose from 8 Google Fonts with size controls
+7. **Customize colors**: Use color picker for custom title/subtitle colors
+8. **Position elements**: Drag text and badge to desired positions (positions are saved!)
+9. **Save project**: Name and save your project to localStorage
+10. **Export**: Choose format (JPG/PNG), adjust quality, and download
 
 ### Tips
 - Use JPG format for smaller file sizes (recommended for YouTube)
 - Quality 90% is optimal balance between size and quality
-- All text uses pre-configured fonts with outline and shadow effects
+- Text positions are automatically saved when you move them
+- Save projects frequently to avoid losing work
+- Try the Cinematic Box template for movie poster style thumbnails
 - Canvas elements are fully interactive - click and drag to reposition
 
 ## Project Structure
@@ -79,12 +87,22 @@ npm run preview
 src/
 ├── components/         # React components
 │   ├── Canvas/        # Canvas-related components
-│   ├── Sidebar/       # Sidebar panels
-│   ├── ProjectGallery/
-│   └── BrandKit/
-├── hooks/             # Custom React hooks
+│   │   └── ThumbnailCanvas.jsx  # Main Fabric.js canvas
+│   └── Sidebar/       # Sidebar panels
+│       ├── UploadPanel.jsx      # Image upload
+│       ├── TemplateSelector.jsx # Template selection
+│       ├── FontSelector.jsx     # Font customization
+│       ├── TextColorPicker.jsx  # Text color picker
+│       ├── BadgeEditor.jsx      # AI badge editor
+│       ├── ProjectManager.jsx   # Save/load projects
+│       └── ExportPanel.jsx      # Export settings
 ├── utils/             # Utility functions
-├── data/              # Static data (templates, palettes)
+│   ├── exportUtils.js # Export canvas to image
+│   └── storageUtils.js# localStorage management
+├── data/              # Static data
+│   ├── templates.js   # 6 thumbnail templates
+│   ├── fonts.js       # 8 Google Fonts
+│   └── badgeStyles.js # Badge style definitions
 ├── styles/            # Global styles
 ├── App.jsx            # Main app component
 └── main.jsx           # Entry point
@@ -104,23 +122,30 @@ src/
 - [x] Export functionality (JPG/PNG with quality control)
 - [x] Interactive canvas (drag, resize elements)
 
-### 🚧 Phase 2: Enhanced Features (In Progress)
+### ✅ Phase 2: Enhanced Features (Completed)
 - [x] AI Generated badge system (4 styles, customizable, draggable)
-- [x] Font selector UI (6 fonts, size controls for title and subtitle)
+- [x] Font selector UI (8 fonts including Rajdhani and Cinzel, size controls)
 - [x] Dual format support (16:9 landscape + 9:16 portrait)
 - [x] Badge background customization (transparent or custom color)
-- [ ] Color picker for text customization
-- [ ] Save/load projects (localStorage)
+- [x] Color picker for text customization (title and subtitle with presets)
+- [x] Save/load projects (localStorage with metadata)
+- [x] Text position persistence (positions saved and restored)
+- [x] Cinematic Box template (full-width text background)
+- [x] Project Manager UI (save, load, delete, new project)
+
+### 🚧 Phase 3: Advanced Features (Planned)
 - [ ] Undo/Redo functionality
 - [ ] Auto-save
-- [ ] Project gallery view
-
-### 📋 Phase 3: Polish & Optimization (Future)
+- [ ] Project gallery view with thumbnails
 - [ ] Keyboard shortcuts
 - [ ] Performance optimization
+
+### 📋 Phase 4: Future Enhancements
 - [ ] Batch processing
 - [ ] Video frame extraction
 - [ ] A/B testing preview
+- [ ] Template customization editor
+- [ ] Export presets
 
 ## License
 
