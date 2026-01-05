@@ -161,9 +161,14 @@ function App() {
       {/* Header */}
       <header className="bg-[#2a2a2a] border-b border-gray-700 px-6 py-4 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="text-3xl">🎸</div>
+          <div className="text-2xl font-bold text-white">
+            <span>Pix</span>
+            <span className="text-red-500">3</span>
+            <span className="text-blue-500">l</span>
+            <span>Tools</span>
+          </div>
           <h1 className="text-2xl font-bold text-white">
-            Music Video Thumbnail Generator
+            Video Thumbnail Generator
           </h1>
         </div>
       </header>
