@@ -165,7 +165,7 @@ function App() {
             <span>Pix</span>
             <span className="text-red-500">3</span>
             <span className="text-blue-500">l</span>
-            <span>Tools</span>
+            <span>Cover</span>
           </div>
           <h1 className="text-2xl font-bold text-white">
             Video Thumbnail Generator

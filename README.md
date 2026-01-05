@@ -1,6 +1,6 @@
-# Music Video Thumbnail Generator
+# Pix3lCover
 
-A web application to create professional YouTube thumbnails for AI-generated music videos in under 5 minutes.
+A professional web application to create stunning YouTube thumbnails for videos and shorts in under 5 minutes.
 
 ## Features
 
@@ -8,7 +8,7 @@ A web application to create professional YouTube thumbnails for AI-generated mus
 
 - 🖼️ **Image Upload**: Drag & drop, file upload, or paste from clipboard (Ctrl+V)
 - 📐 **Dual Format Support**: 16:9 landscape (1280x720) and 9:16 portrait (720x1280) for YouTube Shorts
-- 🎨 **6 Professional Templates**: Music-themed designs including Cinematic Box with full-width text backgrounds
+- 🎨 **6 Professional Templates**: Professional designs including Cinematic Box with full-width text backgrounds
 - ✍️ **Text Editing**: Title and subtitle with customizable fonts, colors, and effects
 - 🔤 **Font Selector**: Choose from 13 Google Fonts (including luxury fonts: EB Garamond, Bodoni Moda, Cormorant) with size controls
 - 🎨 **Color Picker**: Custom color selection for title and subtitle text with preset colors
@@ -153,4 +153,4 @@ Private (for now)
 
 ## Author
 
-Created for AI music content creators
+Part of the Pix3lTools suite - Professional tools for content creators
