@@ -8,7 +8,7 @@ A professional web application to create stunning YouTube thumbnails for videos 
 
 - 🖼️ **Image Upload**: Drag & drop, file upload, or paste from clipboard (Ctrl+V)
 - 📐 **Dual Format Support**: 16:9 landscape (1920x1080) and 9:16 portrait (1080x1920) for YouTube Shorts
-- 🎨 **6 Professional Templates**: Professional designs including Cinematic Box with full-width text backgrounds
+- 🎨 **14 Professional Templates**: Including Neon Glow, Minimal Clean, Vintage Film, Bold Impact, Gradient Fade, Split Screen, Corner Badge, and Polaroid
 - ✍️ **Text Editing**: Title and subtitle with customizable fonts, colors, and effects
 - 🔤 **Font Selector**: Choose from 23 Google Fonts (including luxury fonts: EB Garamond, Bodoni Moda, Cormorant, DM Serif Display) with size controls
 - 🎨 **Color Picker**: Custom color selection for title and subtitle text with preset colors
