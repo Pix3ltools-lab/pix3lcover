@@ -207,7 +207,7 @@ function App() {
                 >
                   <div className="font-semibold">16:9</div>
                   <div className="text-xs opacity-75 mt-1">Landscape</div>
-                  <div className="text-xs opacity-75">1280x720</div>
+                  <div className="text-xs opacity-75">1920x1080</div>
                 </button>
                 <button
                   onClick={() => setFormat('9:16')}
@@ -221,7 +221,7 @@ function App() {
                 >
                   <div className="font-semibold">9:16</div>
                   <div className="text-xs opacity-75 mt-1">Portrait</div>
-                  <div className="text-xs opacity-75">720x1280</div>
+                  <div className="text-xs opacity-75">1080x1920</div>
                 </button>
               </div>
               <div className="text-xs text-gray-500 mt-2">

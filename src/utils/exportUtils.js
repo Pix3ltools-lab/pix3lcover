@@ -28,11 +28,18 @@ export const exportCanvas = (canvas, options = {}) => {
     canvas.discardActiveObject()
     canvas.renderAll()
 
+    // Calculate multiplier to export at full resolution
+    const canvasWidth = canvas.getWidth()
+    const canvasHeight = canvas.getHeight()
+    const isLandscape = canvasWidth > canvasHeight
+    const targetWidth = isLandscape ? 1920 : 1080
+    const multiplier = targetWidth / canvasWidth
+
     // Export canvas to data URL
     const dataURL = canvas.toDataURL({
       format: format,
       quality: quality,
-      multiplier: 1 // Keep original size (1280x720)
+      multiplier: multiplier // Scale to full HD (1920x1080 or 1080x1920)
     })
 
     // Create download link

@@ -7,7 +7,7 @@ A professional web application to create stunning YouTube thumbnails for videos 
 ### ✅ Implemented (Working)
 
 - 🖼️ **Image Upload**: Drag & drop, file upload, or paste from clipboard (Ctrl+V)
-- 📐 **Dual Format Support**: 16:9 landscape (1280x720) and 9:16 portrait (720x1280) for YouTube Shorts
+- 📐 **Dual Format Support**: 16:9 landscape (1920x1080) and 9:16 portrait (1080x1920) for YouTube Shorts
 - 🎨 **6 Professional Templates**: Professional designs including Cinematic Box with full-width text backgrounds
 - ✍️ **Text Editing**: Title and subtitle with customizable fonts, colors, and effects
 - 🔤 **Font Selector**: Choose from 13 Google Fonts (including luxury fonts: EB Garamond, Bodoni Moda, Cormorant) with size controls
@@ -46,7 +46,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) to view it in your browser.
+Open [http://localhost:3010](http://localhost:3010) to view it in your browser.
 
 ### Build
 

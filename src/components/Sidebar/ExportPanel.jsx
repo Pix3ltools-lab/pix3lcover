@@ -108,7 +108,7 @@ function ExportPanel({ onExport }) {
 
         {/* Info */}
         <div className="text-xs text-gray-500 border-t border-gray-700 pt-3 space-y-1">
-          <p>• Size: 1280 x 720px (YouTube standard)</p>
+          <p>• Size: 1920 x 1080px (Full HD)</p>
           <p>• Target: 200-500 KB for optimal upload</p>
           <p>• All elements will be flattened to image</p>
         </div>

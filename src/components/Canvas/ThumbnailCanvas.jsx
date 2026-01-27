@@ -174,8 +174,8 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
         posY = textPositions.title.top
       } else {
         // Adjust position based on format (scale from 16:9 base to current format)
-        const baseWidth = 1280
-        const baseHeight = 720
+        const baseWidth = 1920
+        const baseHeight = 1080
         const scaleX = CANVAS_WIDTH / baseWidth
         const scaleY = CANVAS_HEIGHT / baseHeight
 
@@ -306,8 +306,8 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
         posY = textPositions.subtitle.top
       } else {
         // Adjust position based on format (scale from 16:9 base to current format)
-        const baseWidth = 1280
-        const baseHeight = 720
+        const baseWidth = 1920
+        const baseHeight = 1080
         const scaleX = CANVAS_WIDTH / baseWidth
         const scaleY = CANVAS_HEIGHT / baseHeight
 
