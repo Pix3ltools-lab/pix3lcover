@@ -14,14 +14,13 @@ A professional web application to create stunning YouTube thumbnails for videos 
 - 🎨 **Color Picker**: Custom color selection for title and subtitle text with preset colors
 - 🎯 **Interactive Canvas**: Drag and resize elements, format-aware positioning with persistent positions
 - 🤖 **AI Generated Badge**: 4 styles, transparent or custom background, smart positioning across formats
-- 💾 **Project Management**: Save/load/delete projects to localStorage with metadata tracking
+- 💾 **Project Gallery**: Visual gallery with thumbnails, grid/list view, search, and format filters
 - 📥 **Export System**: Download as JPG (80-100% quality) or PNG with configurable settings
 - 💾 **Auto-save**: Automatic project saving every 30 seconds with restore on load
 - ⚠️ **Storage Warning**: Dismissible banner informing users about localStorage limitations
 
 ### 🚧 Planned (Not Yet Implemented)
 - ↩️ **Undo/Redo**: History stack for changes
-- 🖼️ **Project Gallery**: Visual preview of saved projects
 - ⌨️ **Keyboard Shortcuts**: Speed up workflow
 
 ## Tech Stack

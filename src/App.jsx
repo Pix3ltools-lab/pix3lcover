@@ -5,13 +5,13 @@ import FontSelector from './components/Sidebar/FontSelector'
 import TextColorPicker from './components/Sidebar/TextColorPicker'
 import BadgeEditor from './components/Sidebar/BadgeEditor'
 import ExportPanel from './components/Sidebar/ExportPanel'
-import ProjectManager from './components/Sidebar/ProjectManager'
+import ProjectGallery from './components/Sidebar/ProjectGallery'
 import ThumbnailCanvas from './components/Canvas/ThumbnailCanvas'
 import StorageWarning from './components/StorageWarning'
 import AutoSaveIndicator from './components/AutoSaveIndicator'
 import templates from './data/templates'
 import { exportCanvas } from './utils/exportUtils'
-import { saveProject, loadProject, createProjectFromState, loadAutoSave, clearAutoSave } from './utils/storageUtils'
+import { saveProject, loadProject, createProjectFromState, loadAutoSave, clearAutoSave, generateThumbnail } from './utils/storageUtils'
 import useAutoSave from './hooks/useAutoSave'
 
 function App() {
@@ -121,6 +121,15 @@ function App() {
   }
 
   const handleSaveProject = (projectName) => {
+    // Generate thumbnail from canvas
+    let thumbnail = null
+    if (canvasRef.current) {
+      const canvas = canvasRef.current.getCanvas()
+      if (canvas) {
+        thumbnail = generateThumbnail(canvas, format)
+      }
+    }
+
     const currentState = {
       id: currentProjectId,
       format,
@@ -134,7 +143,7 @@ function App() {
       badgeConfig
     }
 
-    const project = createProjectFromState(currentState, projectName)
+    const project = createProjectFromState(currentState, projectName, thumbnail)
     const success = saveProject(project)
 
     if (success) {
@@ -238,11 +247,12 @@ function App() {
         {/* Sidebar */}
         <aside className="w-80 bg-[#2a2a2a] border-r border-gray-700 overflow-y-auto">
           <div className="p-6 space-y-6">
-            {/* Project Manager */}
-            <ProjectManager
+            {/* Project Gallery */}
+            <ProjectGallery
               currentProjectId={currentProjectId}
               onSave={handleSaveProject}
               onLoad={handleLoadProject}
+              canvasRef={canvasRef}
               onNew={handleNewProject}
             />
 

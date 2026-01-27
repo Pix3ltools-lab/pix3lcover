@@ -90,7 +90,7 @@ export const generateProjectId = () => {
  * Create a project object from current state
  * Note: We save only the template ID, not the entire template object
  */
-export const createProjectFromState = (state, projectName) => {
+export const createProjectFromState = (state, projectName, thumbnail = null) => {
   return {
     id: state.id || generateProjectId(),
     name: projectName || `Project ${new Date().toLocaleDateString()}`,
@@ -102,7 +102,34 @@ export const createProjectFromState = (state, projectName) => {
     fontConfig: state.fontConfig,
     textColors: state.textColors,
     textPositions: state.textPositions,
-    badgeConfig: state.badgeConfig
+    badgeConfig: state.badgeConfig,
+    thumbnail: thumbnail
+  }
+}
+
+/**
+ * Generate a thumbnail from canvas
+ * Returns a small base64 image for gallery preview
+ */
+export const generateThumbnail = (canvas, format = '16:9') => {
+  if (!canvas) return null
+
+  try {
+    // Thumbnail dimensions (small for storage efficiency)
+    const thumbWidth = format === '16:9' ? 160 : 90
+    const thumbHeight = format === '16:9' ? 90 : 160
+
+    // Get canvas data URL at reduced size
+    const dataURL = canvas.toDataURL({
+      format: 'jpeg',
+      quality: 0.6,
+      multiplier: thumbWidth / canvas.getWidth()
+    })
+
+    return dataURL
+  } catch (error) {
+    console.error('Error generating thumbnail:', error)
+    return null
   }
 }
 
