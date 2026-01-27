@@ -231,9 +231,19 @@ function App() {
               <span className="text-blue-500">l</span>
               <span>Cover</span>
             </div>
-            <h1 className="text-2xl font-bold text-white">
-              Video Thumbnail Generator
-            </h1>
+            <div>
+              <h1 className="text-2xl font-bold text-white">
+                Video Thumbnail Generator
+              </h1>
+              <a
+                href="https://www.pix3ltools.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-gray-400 hover:text-cyan-400 transition-colors"
+              >
+                From the <span className="text-pink-400">Pix3lTools</span> Collection
+              </a>
+            </div>
           </div>
           <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
         </div>
