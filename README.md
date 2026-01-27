@@ -4,6 +4,8 @@ A professional web application to create stunning YouTube thumbnails for videos 
 
 **From the [Pix3lTools](https://www.pix3ltools.com/) Collection** - Professional tools for content creators.
 
+![Pix3lCover Screenshot](screenshot.jpg)
+
 ## Features
 
 ### Implemented (Working)
