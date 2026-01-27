@@ -10,16 +10,17 @@ A professional web application to create stunning YouTube thumbnails for videos 
 - 📐 **Dual Format Support**: 16:9 landscape (1920x1080) and 9:16 portrait (1080x1920) for YouTube Shorts
 - 🎨 **6 Professional Templates**: Professional designs including Cinematic Box with full-width text backgrounds
 - ✍️ **Text Editing**: Title and subtitle with customizable fonts, colors, and effects
-- 🔤 **Font Selector**: Choose from 13 Google Fonts (including luxury fonts: EB Garamond, Bodoni Moda, Cormorant) with size controls
+- 🔤 **Font Selector**: Choose from 23 Google Fonts (including luxury fonts: EB Garamond, Bodoni Moda, Cormorant, DM Serif Display) with size controls
 - 🎨 **Color Picker**: Custom color selection for title and subtitle text with preset colors
 - 🎯 **Interactive Canvas**: Drag and resize elements, format-aware positioning with persistent positions
 - 🤖 **AI Generated Badge**: 4 styles, transparent or custom background, smart positioning across formats
 - 💾 **Project Management**: Save/load/delete projects to localStorage with metadata tracking
 - 📥 **Export System**: Download as JPG (80-100% quality) or PNG with configurable settings
+- 💾 **Auto-save**: Automatic project saving every 30 seconds with restore on load
+- ⚠️ **Storage Warning**: Dismissible banner informing users about localStorage limitations
 
 ### 🚧 Planned (Not Yet Implemented)
 - ↩️ **Undo/Redo**: History stack for changes
-- 💾 **Auto-save**: Automatic project saving
 - 🖼️ **Project Gallery**: Visual preview of saved projects
 - ⌨️ **Keyboard Shortcuts**: Speed up workflow
 
@@ -28,7 +29,7 @@ A professional web application to create stunning YouTube thumbnails for videos 
 - **Frontend**: React 18 + Vite 6
 - **Styling**: Tailwind CSS 3.4
 - **Canvas**: Fabric.js 5.3
-- **Fonts**: Google Fonts (13 total: Bebas Neue, Oswald, Playfair Display, Montserrat, Anton, Roboto Condensed, Rajdhani, Cinzel, Bodoni Moda, Cormorant, Jost, Abril Fatface, EB Garamond)
+- **Fonts**: Google Fonts (23 total: Bebas Neue, Oswald, Playfair Display, Montserrat, Anton, Roboto Condensed, Rajdhani, Cinzel, Bodoni Moda, Cormorant, Jost, Abril Fatface, EB Garamond, Poppins, Lora, Rubik, Archivo Black, Merriweather, Space Grotesk, DM Serif Display, Barlow Condensed, Libre Baskerville, Nunito)
 - **Storage**: LocalStorage (project persistence)
 - **Deployment**: Vercel (ready)
 

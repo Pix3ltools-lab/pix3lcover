@@ -133,6 +133,106 @@ export const fonts = [
     preview: 'Luxury',
     bestFor: 'Elegant luxury titles, sophisticated branding',
     recommended: true
+  },
+  {
+    id: 'poppins',
+    name: 'Poppins',
+    family: 'Poppins',
+    category: 'sans-serif',
+    description: 'Modern geometric, highly versatile',
+    preview: 'MODERN DESIGN',
+    bestFor: 'Modern titles, versatile use',
+    recommended: true
+  },
+  {
+    id: 'lora',
+    name: 'Lora',
+    family: 'Lora',
+    category: 'serif',
+    description: 'Elegant serif for editorial style',
+    preview: 'Editorial Style',
+    bestFor: 'Elegant titles, editorial design',
+    recommended: false
+  },
+  {
+    id: 'rubik',
+    name: 'Rubik',
+    family: 'Rubik',
+    category: 'sans-serif',
+    description: 'Rounded modern, tech friendly',
+    preview: 'TECH STARTUP',
+    bestFor: 'Tech themes, startup vibes',
+    recommended: false
+  },
+  {
+    id: 'archivo-black',
+    name: 'Archivo Black',
+    family: 'Archivo Black',
+    category: 'display',
+    description: 'Ultra bold, maximum impact',
+    preview: 'BOLD IMPACT',
+    bestFor: 'Bold titles, maximum visibility',
+    recommended: true
+  },
+  {
+    id: 'merriweather',
+    name: 'Merriweather',
+    family: 'Merriweather',
+    category: 'serif',
+    description: 'Highly readable, classic feel',
+    preview: 'Classic Reading',
+    bestFor: 'Readable subtitles, classic aesthetics',
+    recommended: false
+  },
+  {
+    id: 'space-grotesk',
+    name: 'Space Grotesk',
+    family: 'Space Grotesk',
+    category: 'sans-serif',
+    description: 'Futuristic, tech-forward design',
+    preview: 'FUTURE TECH',
+    bestFor: 'Sci-fi themes, tech content',
+    recommended: true
+  },
+  {
+    id: 'dm-serif-display',
+    name: 'DM Serif Display',
+    family: 'DM Serif Display',
+    category: 'serif',
+    description: 'Luxury display serif',
+    preview: 'Luxury Style',
+    bestFor: 'Fashion titles, luxury branding',
+    recommended: true
+  },
+  {
+    id: 'barlow-condensed',
+    name: 'Barlow Condensed',
+    family: 'Barlow Condensed',
+    category: 'sans-serif',
+    description: 'Athletic, sporty condensed',
+    preview: 'SPORTS ACTION',
+    bestFor: 'Sports content, fitness themes',
+    recommended: false
+  },
+  {
+    id: 'libre-baskerville',
+    name: 'Libre Baskerville',
+    family: 'Libre Baskerville',
+    category: 'serif',
+    description: 'Classic literary elegance',
+    preview: 'Literary Classic',
+    bestFor: 'Literary themes, classic elegance',
+    recommended: false
+  },
+  {
+    id: 'nunito',
+    name: 'Nunito',
+    family: 'Nunito',
+    category: 'sans-serif',
+    description: 'Friendly rounded, approachable',
+    preview: 'Friendly Vibes',
+    bestFor: 'Friendly content, approachable design',
+    recommended: false
   }
 ]
 
