@@ -36,7 +36,7 @@ function AutoSaveIndicator({ status, lastSaved }) {
         if (lastSaved) {
           const timeAgo = getTimeAgo(lastSaved)
           return {
-            text: `Salvato ${timeAgo}`,
+            text: `Saved ${timeAgo}`,
             color: 'text-gray-500',
             icon: (
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

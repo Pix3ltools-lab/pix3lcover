@@ -224,26 +224,21 @@ function App() {
       {/* Header */}
       <header className="bg-[#2a2a2a] border-b border-gray-700 px-6 py-4 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="text-2xl font-bold text-white">
               <span>Pix</span>
               <span className="text-red-500">3</span>
               <span className="text-blue-500">l</span>
               <span>Cover</span>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">
-                Video Thumbnail Generator
-              </h1>
-              <a
-                href="https://www.pix3ltools.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-gray-400 hover:text-cyan-400 transition-colors"
-              >
-                From the <span className="text-pink-400">Pix3lTools</span> Collection
-              </a>
-            </div>
+            <a
+              href="https://www.pix3ltools.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:from-pink-400 hover:to-cyan-400 transition-all shadow-lg shadow-pink-500/20"
+            >
+              Pix3lTools Collection
+            </a>
           </div>
           <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
         </div>
