@@ -224,11 +224,14 @@ function App() {
       {/* Header */}
       <header className="bg-[#2a2a2a] border-b border-gray-700 px-6 py-4 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="text-2xl font-bold text-white">
-            <span>Pix</span>
-            <span className="text-red-500">3</span>
-            <span className="text-blue-500">l</span>
-            <span>Cover</span>
+          <div className="flex items-center gap-2">
+            <div className="text-2xl font-bold text-white">
+              <span>Pix</span>
+              <span className="text-red-500">3</span>
+              <span className="text-blue-500">l</span>
+              <span>Cover</span>
+            </div>
+            <span className="text-xs text-gray-500">v1.0.0</span>
           </div>
           <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
         </div>
