@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import UploadPanel from './components/Sidebar/UploadPanel'
 import TemplateSelector from './components/Sidebar/TemplateSelector'
 import FontSelector from './components/Sidebar/FontSelector'
@@ -7,9 +7,12 @@ import BadgeEditor from './components/Sidebar/BadgeEditor'
 import ExportPanel from './components/Sidebar/ExportPanel'
 import ProjectManager from './components/Sidebar/ProjectManager'
 import ThumbnailCanvas from './components/Canvas/ThumbnailCanvas'
+import StorageWarning from './components/StorageWarning'
+import AutoSaveIndicator from './components/AutoSaveIndicator'
 import templates from './data/templates'
 import { exportCanvas } from './utils/exportUtils'
-import { saveProject, loadProject, createProjectFromState } from './utils/storageUtils'
+import { saveProject, loadProject, createProjectFromState, loadAutoSave, clearAutoSave } from './utils/storageUtils'
+import useAutoSave from './hooks/useAutoSave'
 
 function App() {
   const [currentProjectId, setCurrentProjectId] = useState(null)
@@ -41,6 +44,57 @@ function App() {
     backgroundColor: '#667eea'
   })
   const canvasRef = useRef(null)
+
+  // Auto-save state
+  const autoSaveState = {
+    format,
+    uploadedImage,
+    selectedTemplate,
+    titleText,
+    subtitleText,
+    fontConfig,
+    textColors,
+    textPositions,
+    badgeConfig
+  }
+
+  const { saveStatus, lastSaved } = useAutoSave(autoSaveState, true)
+
+  // Restore auto-save on mount
+  useEffect(() => {
+    const autoSave = loadAutoSave()
+    if (autoSave && autoSave.uploadedImage) {
+      const shouldRestore = window.confirm(
+        'An unsaved project was found. Do you want to restore it?'
+      )
+      if (shouldRestore) {
+        const template = templates.find(t => t.id === autoSave.templateId) || templates[0]
+        setFormat(autoSave.format || '16:9')
+        setUploadedImage(autoSave.uploadedImage)
+        setSelectedTemplate(template)
+        setTitleText(autoSave.titleText || '')
+        setSubtitleText(autoSave.subtitleText || '')
+        setFontConfig(autoSave.fontConfig || {
+          titleFont: 'Bebas Neue',
+          subtitleFont: 'Montserrat',
+          titleSize: 72,
+          subtitleSize: 36
+        })
+        setTextColors(autoSave.textColors || { titleColor: null, subtitleColor: null })
+        setTextPositions(autoSave.textPositions || { title: null, subtitle: null })
+        setBadgeConfig(autoSave.badgeConfig || {
+          enabled: false,
+          style: 'futuristic',
+          position: 'top-right',
+          text: 'AI Generated',
+          transparentBg: true,
+          backgroundColor: '#667eea'
+        })
+      } else {
+        clearAutoSave()
+      }
+    }
+  }, [])
 
   const handleImageUpload = (imageUrl) => {
     setUploadedImage(imageUrl)
@@ -160,18 +214,24 @@ function App() {
     <div className="h-screen bg-[#1a1a1a] flex flex-col">
       {/* Header */}
       <header className="bg-[#2a2a2a] border-b border-gray-700 px-6 py-4 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="text-2xl font-bold text-white">
-            <span>Pix</span>
-            <span className="text-red-500">3</span>
-            <span className="text-blue-500">l</span>
-            <span>Cover</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="text-2xl font-bold text-white">
+              <span>Pix</span>
+              <span className="text-red-500">3</span>
+              <span className="text-blue-500">l</span>
+              <span>Cover</span>
+            </div>
+            <h1 className="text-2xl font-bold text-white">
+              Video Thumbnail Generator
+            </h1>
           </div>
-          <h1 className="text-2xl font-bold text-white">
-            Video Thumbnail Generator
-          </h1>
+          <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
         </div>
       </header>
+
+      {/* Storage Warning Banner */}
+      <StorageWarning />
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">

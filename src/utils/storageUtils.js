@@ -3,6 +3,7 @@
  */
 
 const STORAGE_KEY = 'mvtg_projects' // Music Video Thumbnail Generator
+const AUTOSAVE_KEY = 'pix3lcover_autosave'
 
 /**
  * Get all saved projects from localStorage
@@ -127,5 +128,51 @@ export const getStorageInfo = () => {
       sizeInKB: '0',
       sizeInBytes: 0
     }
+  }
+}
+
+/**
+ * Save auto-save data to localStorage
+ */
+export const saveAutoSave = (state) => {
+  try {
+    const autoSaveData = {
+      ...state,
+      templateId: state.selectedTemplate?.id,
+      savedAt: new Date().toISOString()
+    }
+    // Remove the full template object, keep only ID
+    delete autoSaveData.selectedTemplate
+    localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(autoSaveData))
+    return true
+  } catch (error) {
+    console.error('Error auto-saving:', error)
+    return false
+  }
+}
+
+/**
+ * Load auto-save data from localStorage
+ */
+export const loadAutoSave = () => {
+  try {
+    const autoSaveJson = localStorage.getItem(AUTOSAVE_KEY)
+    return autoSaveJson ? JSON.parse(autoSaveJson) : null
+  } catch (error) {
+    console.error('Error loading auto-save:', error)
+    return null
+  }
+}
+
+/**
+ * Clear auto-save data
+ */
+export const clearAutoSave = () => {
+  try {
+    localStorage.removeItem(AUTOSAVE_KEY)
+    return true
+  } catch (error) {
+    console.error('Error clearing auto-save:', error)
+    return false
   }
 }
