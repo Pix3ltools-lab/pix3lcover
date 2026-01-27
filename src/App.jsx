@@ -224,21 +224,11 @@ function App() {
       {/* Header */}
       <header className="bg-[#2a2a2a] border-b border-gray-700 px-6 py-4 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="text-2xl font-bold text-white">
-              <span>Pix</span>
-              <span className="text-red-500">3</span>
-              <span className="text-blue-500">l</span>
-              <span>Cover</span>
-            </div>
-            <a
-              href="https://www.pix3ltools.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-pink-500 to-cyan-500 text-white hover:from-pink-400 hover:to-cyan-400 transition-all shadow-lg shadow-pink-500/20"
-            >
-              Pix3lTools Collection
-            </a>
+          <div className="text-2xl font-bold text-white">
+            <span>Pix</span>
+            <span className="text-red-500">3</span>
+            <span className="text-blue-500">l</span>
+            <span>Cover</span>
           </div>
           <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
         </div>
@@ -388,6 +378,33 @@ function App() {
           />
         </main>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-[#2a2a2a] border-t border-gray-700 px-6 py-2 flex-shrink-0">
+        <div className="flex items-center justify-center gap-3 text-xs text-gray-500">
+          <a
+            href="https://www.pix3ltools.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-pink-400 transition-colors"
+          >
+            From the <span className="text-pink-400">Pix3lTools</span> Collection
+          </a>
+          <span className="text-gray-600">•</span>
+          <a
+            href="https://x.com/pix3ltools"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 hover:text-cyan-400 transition-colors"
+            title="Follow on X"
+          >
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            <span>Follow</span>
+          </a>
+        </div>
+      </footer>
     </div>
   )
 }
