@@ -11,6 +11,7 @@ A professional web application to create stunning YouTube thumbnails for videos 
 ### Implemented (Working)
 
 - **Image Upload**: Drag & drop, file upload, or paste from clipboard (Ctrl+V)
+- **Video Frame Extraction**: Upload a video (MP4, WebM, MOV) and extract any frame as thumbnail background
 - **Dual Format Support**: 16:9 landscape (1920x1080) and 9:16 portrait (1080x1920) for YouTube Shorts
 - **14 Professional Templates**: Including Neon Glow, Minimal Clean, Vintage Film, Bold Impact, Gradient Fade, Split Screen, Corner Badge, and Polaroid
 - **Text Editing**: Title and subtitle with customizable fonts, colors, and effects
