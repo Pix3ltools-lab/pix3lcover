@@ -406,6 +406,13 @@ function App() {
             </svg>
             <span>Follow</span>
           </a>
+          <span className="text-gray-600">•</span>
+          <a
+            href="/privacy.html"
+            className="hover:text-gray-300 transition-colors"
+          >
+            Privacy Policy
+          </a>
         </div>
       </footer>
     </div>
