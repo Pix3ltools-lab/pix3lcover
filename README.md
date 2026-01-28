@@ -6,6 +6,8 @@ A professional web application to create stunning YouTube thumbnails for videos 
 
 ![Pix3lCover Screenshot](screenshot.jpg)
 
+[![Watch Demo](https://img.shields.io/badge/Watch_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=aj5Eh3BlGY8)
+
 ## Features
 
 ### Implemented (Working)
