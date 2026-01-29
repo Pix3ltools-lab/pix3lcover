@@ -80,6 +80,37 @@ export const deleteProject = (projectId) => {
 }
 
 /**
+ * Duplicate a project by ID
+ * Creates a copy with new ID and modified name
+ */
+export const duplicateProject = (projectId) => {
+  try {
+    const projects = getAllProjects()
+    const original = projects.find(p => p.id === projectId)
+
+    if (!original) {
+      return { success: false, error: 'Project not found' }
+    }
+
+    const duplicate = {
+      ...original,
+      id: generateProjectId(),
+      name: `${original.name} (Copy)`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+
+    projects.push(duplicate)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects))
+
+    return { success: true, project: duplicate }
+  } catch (error) {
+    console.error('Error duplicating project:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+/**
  * Generate a unique project ID
  */
 export const generateProjectId = () => {

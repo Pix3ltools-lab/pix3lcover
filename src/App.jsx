@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import UploadPanel from './components/Sidebar/UploadPanel'
 import TemplateSelector from './components/Sidebar/TemplateSelector'
 import FontSelector from './components/Sidebar/FontSelector'
@@ -14,6 +14,7 @@ import templates from './data/templates'
 import { exportCanvas } from './utils/exportUtils'
 import { saveProject, loadProject, createProjectFromState, loadAutoSave, clearAutoSave, generateThumbnail } from './utils/storageUtils'
 import useAutoSave from './hooks/useAutoSave'
+import useHistory from './hooks/useHistory'
 
 function App() {
   const [currentProjectId, setCurrentProjectId] = useState(null)
@@ -45,6 +46,62 @@ function App() {
     backgroundColor: '#667eea'
   })
   const canvasRef = useRef(null)
+  const isRestoringHistory = useRef(false)
+
+  // Get current editable state for history
+  const getEditableState = useCallback(() => ({
+    titleText,
+    subtitleText,
+    fontConfig,
+    textColors,
+    textPositions,
+    badgeConfig,
+    selectedTemplate,
+    format
+  }), [titleText, subtitleText, fontConfig, textColors, textPositions, badgeConfig, selectedTemplate, format])
+
+  // Handle history state restoration
+  const handleHistoryRestore = useCallback((state) => {
+    if (!state) return
+    isRestoringHistory.current = true
+    setTitleText(state.titleText)
+    setSubtitleText(state.subtitleText)
+    setFontConfig(state.fontConfig)
+    setTextColors(state.textColors)
+    setTextPositions(state.textPositions)
+    setBadgeConfig(state.badgeConfig)
+    setSelectedTemplate(state.selectedTemplate)
+    setFormat(state.format)
+    // Reset flag after state updates
+    setTimeout(() => {
+      isRestoringHistory.current = false
+    }, 0)
+  }, [])
+
+  // Initialize history with current state
+  const initialHistoryState = {
+    titleText: '',
+    subtitleText: '',
+    fontConfig: { titleFont: 'Bebas Neue', subtitleFont: 'Montserrat', titleSize: 72, subtitleSize: 36 },
+    textColors: { titleColor: null, subtitleColor: null },
+    textPositions: { title: null, subtitle: null },
+    badgeConfig: { enabled: false, style: 'futuristic', position: 'top-right', text: 'AI Generated', transparentBg: true, backgroundColor: '#667eea' },
+    selectedTemplate: templates[0],
+    format: '16:9'
+  }
+
+  const { pushState, undo, redo, canUndo, canRedo } = useHistory(initialHistoryState, handleHistoryRestore)
+
+  // Push state to history when editable state changes (debounced)
+  useEffect(() => {
+    if (isRestoringHistory.current) return
+
+    const timeoutId = setTimeout(() => {
+      pushState(getEditableState())
+    }, 500) // Debounce 500ms
+
+    return () => clearTimeout(timeoutId)
+  }, [titleText, subtitleText, fontConfig, textColors, badgeConfig, selectedTemplate, format])
 
   // Auto-save state
   const autoSaveState = {
@@ -234,7 +291,32 @@ function App() {
             </div>
             <span className="text-xs text-gray-500">v1.1.1</span>
           </div>
-          <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
+          <div className="flex items-center gap-3">
+            {/* Undo/Redo Buttons */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={undo}
+                disabled={!canUndo}
+                className="p-1.5 rounded hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Undo (Ctrl+Z)"
+              >
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                </svg>
+              </button>
+              <button
+                onClick={redo}
+                disabled={!canRedo}
+                className="p-1.5 rounded hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Redo (Ctrl+Shift+Z)"
+              >
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" />
+                </svg>
+              </button>
+            </div>
+            <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
+          </div>
         </div>
       </header>
 

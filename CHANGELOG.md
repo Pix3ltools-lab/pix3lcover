@@ -10,10 +10,21 @@ All notable changes to Pix3lCover will be documented in this file.
 - **Export/Import JSON**: Backup and restore all projects as JSON files
   - Export downloads all projects as `pix3lcover-backup-YYYY-MM-DD.json`
   - Import supports merge (add new, skip duplicates) and replace modes
+- **Undo/Redo**: History stack for editing actions
+  - Ctrl+Z to undo, Ctrl+Shift+Z or Ctrl+Y to redo
+  - Visual buttons in header with disabled state indicators
+  - Debounced state tracking (500ms) to avoid excessive history entries
+- **Duplicate Project**: One-click project duplication in gallery view
+  - Creates copy with "(Copy)" suffix in name
+  - Available in both grid and list views
+- **Error Boundaries**: React error boundary wrapping the app
+  - Graceful error display instead of white screen
+  - "Try Again" and "Reload App" recovery options
 
 ### Changed
 - Sidebar now displays storage usage at the bottom with project count
 - Upload panel shows compression progress spinner during image processing
+- Header now includes undo/redo buttons next to auto-save indicator
 
 ## [1.1.0] - 2026-01-28
 

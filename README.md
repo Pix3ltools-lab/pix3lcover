@@ -27,11 +27,13 @@ A professional web application to create stunning YouTube thumbnails for videos 
 - **Storage Warning**: Dismissible banner informing users about localStorage limitations
 - **Storage Indicator**: Visual progress bar showing localStorage usage with color-coded warnings
 - **Export/Import JSON**: Backup and restore all projects as JSON files for local storage
+- **Undo/Redo**: History stack with Ctrl+Z / Ctrl+Shift+Z keyboard shortcuts
+- **Duplicate Project**: Create copies of existing projects with one click
+- **Error Boundaries**: Graceful error handling to prevent app crashes
 - **Pix3lTools Branding**: Header link to the Pix3lTools website
 
 ### Planned (Not Yet Implemented)
-- Undo/Redo: History stack for changes
-- Keyboard Shortcuts: Speed up workflow
+- Keyboard Shortcuts: Additional shortcuts for common actions
 
 ## Tech Stack
 
@@ -109,9 +111,11 @@ src/
 │   │   └── ExportPanel.jsx      # Export settings
 │   ├── StorageWarning.jsx       # localStorage warning banner
 │   ├── StorageIndicator.jsx     # Storage usage indicator
+│   ├── ErrorBoundary.jsx        # Error handling wrapper
 │   └── AutoSaveIndicator.jsx    # Auto-save status indicator
 ├── hooks/             # Custom React hooks
-│   └── useAutoSave.js # Auto-save functionality
+│   ├── useAutoSave.js # Auto-save functionality
+│   └── useHistory.js  # Undo/redo history management
 ├── utils/             # Utility functions
 │   ├── exportUtils.js # Export canvas to image
 │   └── storageUtils.js# localStorage management
