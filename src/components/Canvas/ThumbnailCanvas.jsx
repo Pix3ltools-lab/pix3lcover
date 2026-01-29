@@ -2,10 +2,11 @@ import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 're
 import { fabric } from 'fabric'
 import badgeStyles, { badgePositions } from '../../data/badgeStyles'
 
-const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleText, subtitleText, fontConfig, textColors, textPositions, onTextPositionChange, badgeConfig }, ref) => {
+const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleText, subtitleText, extraText, fontConfig, textColors, textPositions, onTextPositionChange, badgeConfig, filterConfig }, ref) => {
   const canvasRef = useRef(null)
   const fabricCanvasRef = useRef(null)
   const [isReady, setIsReady] = useState(false)
+  const [zoom, setZoom] = useState(1)
 
   // Calculate canvas dimensions based on format
   // Use display dimensions directly for now
@@ -57,14 +58,16 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
 
     const handleObjectModified = (e) => {
       const obj = e.target
-      if (obj && (obj.name === 'title' || obj.name === 'subtitle')) {
+      if (obj && (obj.name === 'title' || obj.name === 'subtitle' || obj.name === 'extra')) {
         // Get current positions from canvas
         const titleObj = canvas.getObjects().find(o => o.name === 'title')
         const subtitleObj = canvas.getObjects().find(o => o.name === 'subtitle')
+        const extraObj = canvas.getObjects().find(o => o.name === 'extra')
 
         const newPositions = {
           title: titleObj ? { left: titleObj.left, top: titleObj.top } : textPositions?.title || null,
-          subtitle: subtitleObj ? { left: subtitleObj.left, top: subtitleObj.top } : textPositions?.subtitle || null
+          subtitle: subtitleObj ? { left: subtitleObj.left, top: subtitleObj.top } : textPositions?.subtitle || null,
+          extra: extraObj ? { left: extraObj.left, top: extraObj.top } : textPositions?.extra || null
         }
 
         onTextPositionChange(newPositions)
@@ -148,6 +151,52 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
       canvas.renderAll()
     })
   }, [imageUrl, isReady])
+
+  // Apply filters to image
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isReady || !filterConfig) return
+
+    const canvas = fabricCanvasRef.current
+    const imageObj = canvas.getObjects().find(obj => obj.type === 'image')
+
+    if (!imageObj) return
+
+    // Build filters array
+    const filters = []
+
+    // Brightness: -1 to 1 (we use -100 to 100, so divide by 100)
+    if (filterConfig.brightness !== 0) {
+      filters.push(new fabric.Image.filters.Brightness({
+        brightness: filterConfig.brightness / 100
+      }))
+    }
+
+    // Contrast: -1 to 1
+    if (filterConfig.contrast !== 0) {
+      filters.push(new fabric.Image.filters.Contrast({
+        contrast: filterConfig.contrast / 100
+      }))
+    }
+
+    // Saturation: -1 to 1
+    if (filterConfig.saturation !== 0) {
+      filters.push(new fabric.Image.filters.Saturation({
+        saturation: filterConfig.saturation / 100
+      }))
+    }
+
+    // Blur: 0 to 1 (we use 0-10, so divide by 10)
+    if (filterConfig.blur > 0) {
+      filters.push(new fabric.Image.filters.Blur({
+        blur: filterConfig.blur / 10
+      }))
+    }
+
+    // Apply filters
+    imageObj.filters = filters
+    imageObj.applyFilters()
+    canvas.renderAll()
+  }, [filterConfig, isReady, imageUrl])
 
   // Add/update title text
   useEffect(() => {
@@ -355,6 +404,81 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
     }
   }, [subtitleText, selectedTemplate, fontConfig, textColors, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
 
+  // Add/update extra text line
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isReady) return
+
+    const canvas = fabricCanvasRef.current
+
+    // Remove existing extra text
+    const objects = canvas.getObjects()
+    objects.forEach(obj => {
+      if (obj.name === 'extra') {
+        canvas.remove(obj)
+      }
+    })
+
+    if (extraText && extraText.trim()) {
+      const template = selectedTemplate || {}
+      const textConfig = template.text?.subtitle || {} // Use subtitle config as base
+
+      // Use saved position if available, otherwise calculate below subtitle
+      let posX, posY
+      if (textPositions?.extra) {
+        posX = textPositions.extra.left
+        posY = textPositions.extra.top
+      } else {
+        // Adjust position based on format (scale from 16:9 base to current format)
+        const baseWidth = 1920
+        const baseHeight = 1080
+        const scaleX = CANVAS_WIDTH / baseWidth
+        const scaleY = CANVAS_HEIGHT / baseHeight
+
+        posX = textConfig.position?.x ? textConfig.position.x * scaleX : CANVAS_WIDTH / 2
+        // Position below subtitle (default subtitle is at 0.53, extra at 0.65)
+        posY = textConfig.position?.y ? (textConfig.position.y + 130) * scaleY : CANVAS_HEIGHT * 0.65
+      }
+
+      const text = new fabric.Text(extraText, {
+        name: 'extra',
+        left: posX,
+        top: posY,
+        fontFamily: fontConfig?.subtitleFont || textConfig.font || 'Montserrat',
+        fontSize: (fontConfig?.subtitleSize || textConfig.size || 36) * 0.85, // Slightly smaller
+        fill: textColors?.subtitleColor || textConfig.color || '#E67E22',
+        originX: 'center',
+        originY: 'center',
+        textAlign: textConfig.align || 'center',
+        selectable: true,
+        hasControls: true
+      })
+
+      // Add outline effect if specified
+      if (textConfig.effects?.outline?.enabled) {
+        text.set({
+          stroke: textConfig.effects.outline.color || '#000000',
+          strokeWidth: textConfig.effects.outline.width || 2
+        })
+      }
+
+      // Add shadow effect if specified
+      if (textConfig.effects?.shadow?.enabled) {
+        text.set({
+          shadow: new fabric.Shadow({
+            color: textConfig.effects.shadow.color || '#000000',
+            blur: textConfig.effects.shadow.blur || 8,
+            offsetX: textConfig.effects.shadow.offsetX || 2,
+            offsetY: textConfig.effects.shadow.offsetY || 2
+          })
+        })
+      }
+
+      canvas.add(text)
+      canvas.bringToFront(text)
+      canvas.renderAll()
+    }
+  }, [extraText, selectedTemplate, fontConfig, textColors, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
+
   // Add/update AI Generated badge
   useEffect(() => {
     if (!fabricCanvasRef.current || !isReady) return
@@ -470,6 +594,30 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
     }
   }, [badgeConfig, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
 
+  // Apply zoom to canvas
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isReady) return
+
+    const canvas = fabricCanvasRef.current
+    canvas.setZoom(zoom)
+    canvas.setWidth(CANVAS_WIDTH * zoom)
+    canvas.setHeight(CANVAS_HEIGHT * zoom)
+    canvas.renderAll()
+  }, [zoom, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
+
+  // Zoom handlers
+  const handleZoomIn = () => {
+    setZoom(prev => Math.min(prev + 0.25, 2))
+  }
+
+  const handleZoomOut = () => {
+    setZoom(prev => Math.max(prev - 0.25, 0.5))
+  }
+
+  const handleZoomReset = () => {
+    setZoom(1)
+  }
+
   // Expose canvas instance to parent component
   useImperativeHandle(ref, () => ({
     getCanvas: () => fabricCanvasRef.current,
@@ -479,8 +627,40 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
   }))
 
   return (
-    <div className="w-full h-full flex items-center justify-center p-4">
-      <div className="bg-gray-900 rounded-lg shadow-2xl">
+    <div className="w-full h-full flex flex-col items-center justify-center p-4">
+      {/* Zoom Controls */}
+      <div className="flex items-center gap-2 mb-4">
+        <button
+          onClick={handleZoomOut}
+          disabled={zoom <= 0.5}
+          className="w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 rounded text-white transition-colors"
+          title="Zoom out"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+          </svg>
+        </button>
+        <button
+          onClick={handleZoomReset}
+          className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white transition-colors min-w-[60px]"
+          title="Reset zoom"
+        >
+          {Math.round(zoom * 100)}%
+        </button>
+        <button
+          onClick={handleZoomIn}
+          disabled={zoom >= 2}
+          className="w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 rounded text-white transition-colors"
+          title="Zoom in"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Canvas Container */}
+      <div className="bg-gray-900 rounded-lg shadow-2xl overflow-auto max-w-full max-h-[calc(100vh-200px)]">
         <canvas
           ref={canvasRef}
           style={{

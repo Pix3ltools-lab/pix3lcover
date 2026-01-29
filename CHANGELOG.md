@@ -2,6 +2,32 @@
 
 All notable changes to Pix3lCover will be documented in this file.
 
+## [1.2.0] - 2026-01-29
+
+### Added
+- **Third Text Line**: Optional extra text field for additional information below subtitle
+  - Uses subtitle font with slightly smaller size (85%)
+  - Fully draggable on canvas like title and subtitle
+- **Keyboard Shortcuts**: Productivity shortcuts for power users
+  - Ctrl+S: Quick save (prompts for name if new project)
+  - Ctrl+E: Quick export (JPEG 90% quality)
+  - Delete: Remove selected canvas object
+  - Ctrl+Z/Ctrl+Shift+Z: Undo/Redo (global, even outside input fields)
+- **Image Filters**: Real-time image adjustments
+  - Brightness (-100 to +100)
+  - Contrast (-100 to +100)
+  - Saturation (-100 to +100)
+  - Blur (0 to 10)
+  - Reset button to restore defaults
+  - Filters apply only to background image
+- **Canvas Zoom**: Zoom controls for detail editing
+  - Zoom in/out buttons (50% to 200%)
+  - Click percentage to reset to 100%
+  - Canvas scrollable when zoomed
+
+### Changed
+- Schema version updated to 3 (automatic migration from older versions)
+
 ## [1.1.2] - 2026-01-29
 
 ### Added

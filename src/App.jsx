@@ -4,6 +4,7 @@ import TemplateSelector from './components/Sidebar/TemplateSelector'
 import FontSelector from './components/Sidebar/FontSelector'
 import TextColorPicker from './components/Sidebar/TextColorPicker'
 import BadgeEditor from './components/Sidebar/BadgeEditor'
+import FilterPanel from './components/Sidebar/FilterPanel'
 import ExportPanel from './components/Sidebar/ExportPanel'
 import ProjectGallery from './components/Sidebar/ProjectGallery'
 import ThumbnailCanvas from './components/Canvas/ThumbnailCanvas'
@@ -23,6 +24,7 @@ function App() {
   const [format, setFormat] = useState('16:9') // '16:9' or '9:16'
   const [titleText, setTitleText] = useState('')
   const [subtitleText, setSubtitleText] = useState('')
+  const [extraText, setExtraText] = useState('')
   const [fontConfig, setFontConfig] = useState({
     titleFont: 'Bebas Neue',
     subtitleFont: 'Montserrat',
@@ -45,6 +47,12 @@ function App() {
     transparentBg: true,
     backgroundColor: '#667eea'
   })
+  const [filterConfig, setFilterConfig] = useState({
+    brightness: 0,
+    contrast: 0,
+    saturation: 0,
+    blur: 0
+  })
   const canvasRef = useRef(null)
   const isRestoringHistory = useRef(false)
 
@@ -52,13 +60,15 @@ function App() {
   const getEditableState = useCallback(() => ({
     titleText,
     subtitleText,
+    extraText,
     fontConfig,
     textColors,
     textPositions,
     badgeConfig,
+    filterConfig,
     selectedTemplate,
     format
-  }), [titleText, subtitleText, fontConfig, textColors, textPositions, badgeConfig, selectedTemplate, format])
+  }), [titleText, subtitleText, extraText, fontConfig, textColors, textPositions, badgeConfig, filterConfig, selectedTemplate, format])
 
   // Handle history state restoration
   const handleHistoryRestore = useCallback((state) => {
@@ -66,10 +76,12 @@ function App() {
     isRestoringHistory.current = true
     setTitleText(state.titleText)
     setSubtitleText(state.subtitleText)
+    setExtraText(state.extraText || '')
     setFontConfig(state.fontConfig)
     setTextColors(state.textColors)
     setTextPositions(state.textPositions)
     setBadgeConfig(state.badgeConfig)
+    setFilterConfig(state.filterConfig || { brightness: 0, contrast: 0, saturation: 0, blur: 0 })
     setSelectedTemplate(state.selectedTemplate)
     setFormat(state.format)
     // Reset flag after state updates
@@ -82,10 +94,12 @@ function App() {
   const initialHistoryState = {
     titleText: '',
     subtitleText: '',
+    extraText: '',
     fontConfig: { titleFont: 'Bebas Neue', subtitleFont: 'Montserrat', titleSize: 72, subtitleSize: 36 },
     textColors: { titleColor: null, subtitleColor: null },
-    textPositions: { title: null, subtitle: null },
+    textPositions: { title: null, subtitle: null, extra: null },
     badgeConfig: { enabled: false, style: 'futuristic', position: 'top-right', text: 'AI Generated', transparentBg: true, backgroundColor: '#667eea' },
+    filterConfig: { brightness: 0, contrast: 0, saturation: 0, blur: 0 },
     selectedTemplate: templates[0],
     format: '16:9'
   }
@@ -101,7 +115,7 @@ function App() {
     }, 500) // Debounce 500ms
 
     return () => clearTimeout(timeoutId)
-  }, [titleText, subtitleText, fontConfig, textColors, badgeConfig, selectedTemplate, format])
+  }, [titleText, subtitleText, extraText, fontConfig, textColors, badgeConfig, filterConfig, selectedTemplate, format])
 
   // Auto-save state
   const autoSaveState = {
@@ -110,10 +124,12 @@ function App() {
     selectedTemplate,
     titleText,
     subtitleText,
+    extraText,
     fontConfig,
     textColors,
     textPositions,
-    badgeConfig
+    badgeConfig,
+    filterConfig
   }
 
   const { saveStatus, lastSaved } = useAutoSave(autoSaveState, true)
@@ -132,6 +148,7 @@ function App() {
         setSelectedTemplate(template)
         setTitleText(autoSave.titleText || '')
         setSubtitleText(autoSave.subtitleText || '')
+        setExtraText(autoSave.extraText || '')
         setFontConfig(autoSave.fontConfig || {
           titleFont: 'Bebas Neue',
           subtitleFont: 'Montserrat',
@@ -147,6 +164,12 @@ function App() {
           text: 'AI Generated',
           transparentBg: true,
           backgroundColor: '#667eea'
+        })
+        setFilterConfig(autoSave.filterConfig || {
+          brightness: 0,
+          contrast: 0,
+          saturation: 0,
+          blur: 0
         })
       } else {
         clearAutoSave()
@@ -195,10 +218,12 @@ function App() {
       selectedTemplate,
       titleText,
       subtitleText,
+      extraText,
       fontConfig,
       textColors,
       textPositions,
-      badgeConfig
+      badgeConfig,
+      filterConfig
     }
 
     const project = createProjectFromState(currentState, projectName, thumbnail)
@@ -222,10 +247,12 @@ function App() {
     setSelectedTemplate(template) // Use template from templates array
     setTitleText(project.titleText)
     setSubtitleText(project.subtitleText)
+    setExtraText(project.extraText || '')
     setFontConfig(project.fontConfig)
     setTextColors(project.textColors)
-    setTextPositions(project.textPositions || { title: null, subtitle: null })
+    setTextPositions(project.textPositions || { title: null, subtitle: null, extra: null })
     setBadgeConfig(project.badgeConfig)
+    setFilterConfig(project.filterConfig || { brightness: 0, contrast: 0, saturation: 0, blur: 0 })
     alert(`Project "${project.name}" loaded successfully!`)
   }
 
@@ -237,6 +264,7 @@ function App() {
       setSelectedTemplate(templates[0])
       setTitleText('')
       setSubtitleText('')
+      setExtraText('')
       setFontConfig({
         titleFont: 'Bebas Neue',
         subtitleFont: 'Montserrat',
@@ -249,7 +277,8 @@ function App() {
       })
       setTextPositions({
         title: null,
-        subtitle: null
+        subtitle: null,
+        extra: null
       })
       setBadgeConfig({
         enabled: false,
@@ -259,10 +288,20 @@ function App() {
         transparentBg: true,
         backgroundColor: '#667eea'
       })
+      setFilterConfig({
+        brightness: 0,
+        contrast: 0,
+        saturation: 0,
+        blur: 0
+      })
     }
   }
 
-  const handleExport = (options) => {
+  const handleFilterChange = (newFilterConfig) => {
+    setFilterConfig(newFilterConfig)
+  }
+
+  const handleExport = useCallback((options) => {
     if (!canvasRef.current) {
       alert('Canvas not ready. Please wait a moment and try again.')
       return
@@ -275,7 +314,68 @@ function App() {
     }
 
     exportCanvas(canvas, options)
-  }
+  }, [])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore if typing in an input field
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return
+      }
+
+      // Ctrl+S: Quick save
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault()
+        if (currentProjectId) {
+          // Update existing project
+          handleSaveProject(null) // Will use existing name
+        } else {
+          // Prompt for project name
+          const projectName = prompt('Enter project name:')
+          if (projectName) {
+            handleSaveProject(projectName)
+          }
+        }
+      }
+
+      // Ctrl+E: Export with default options (JPEG 90%)
+      if (e.ctrlKey && e.key === 'e') {
+        e.preventDefault()
+        handleExport({ format: 'jpeg', quality: 0.9 })
+      }
+
+      // Delete: Remove selected canvas object
+      if (e.key === 'Delete') {
+        e.preventDefault()
+        if (canvasRef.current) {
+          const canvas = canvasRef.current.getCanvas()
+          if (canvas) {
+            const activeObject = canvas.getActiveObject()
+            if (activeObject) {
+              canvas.remove(activeObject)
+              canvas.renderAll()
+            }
+          }
+        }
+      }
+
+      // Ctrl+Z: Undo (already handled by useHistory but ensure it works globally)
+      if (e.ctrlKey && !e.shiftKey && e.key === 'z') {
+        e.preventDefault()
+        undo()
+      }
+
+      // Ctrl+Shift+Z or Ctrl+Y: Redo
+      if ((e.ctrlKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y')) {
+        e.preventDefault()
+        redo()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentProjectId, undo, redo])
 
   return (
     <div className="h-screen bg-[#1a1a1a] flex flex-col">
@@ -289,7 +389,7 @@ function App() {
               <span className="text-blue-500">l</span>
               <span>Cover</span>
             </div>
-            <span className="text-xs text-gray-500">v1.1.2</span>
+            <span className="text-xs text-gray-500">v1.2.0</span>
           </div>
           <div className="flex items-center gap-3">
             {/* Undo/Redo Buttons */}
@@ -339,6 +439,12 @@ function App() {
 
             {/* Upload Panel */}
             <UploadPanel onImageUpload={handleImageUpload} />
+
+            {/* Filter Panel */}
+            <FilterPanel
+              filterConfig={filterConfig}
+              onFilterChange={handleFilterChange}
+            />
 
             {/* Format Selector */}
             <section>
@@ -416,6 +522,18 @@ function App() {
                     className="w-full bg-gray-700 px-3 py-2 rounded text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#E67E22]"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm mb-1 text-gray-400">
+                    Extra line (optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={extraText}
+                    onChange={(e) => setExtraText(e.target.value)}
+                    placeholder="Additional text..."
+                    className="w-full bg-gray-700 px-3 py-2 rounded text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#E67E22]"
+                  />
+                </div>
               </div>
             </section>
 
@@ -459,11 +577,13 @@ function App() {
             selectedTemplate={selectedTemplate}
             titleText={titleText}
             subtitleText={subtitleText}
+            extraText={extraText}
             fontConfig={fontConfig}
             textColors={textColors}
             textPositions={textPositions}
             onTextPositionChange={handleTextPositionChange}
             badgeConfig={badgeConfig}
+            filterConfig={filterConfig}
           />
         </main>
       </div>

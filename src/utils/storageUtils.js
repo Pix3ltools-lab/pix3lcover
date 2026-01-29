@@ -9,7 +9,7 @@ const AUTOSAVE_KEY = 'pix3lcover_autosave'
  * Current schema version for project data
  * Increment this when making breaking changes to project structure
  */
-export const CURRENT_SCHEMA_VERSION = 1
+export const CURRENT_SCHEMA_VERSION = 3
 
 /**
  * Default values for project fields (used in migrations)
@@ -18,6 +18,7 @@ const PROJECT_DEFAULTS = {
   format: '16:9',
   titleText: '',
   subtitleText: '',
+  extraText: '',
   templateId: 'classic-blues',
   fontConfig: {
     titleFont: 'Bebas Neue',
@@ -31,7 +32,8 @@ const PROJECT_DEFAULTS = {
   },
   textPositions: {
     title: null,
-    subtitle: null
+    subtitle: null,
+    extra: null
   },
   badgeConfig: {
     enabled: false,
@@ -40,6 +42,12 @@ const PROJECT_DEFAULTS = {
     text: 'AI Generated',
     transparentBg: true,
     backgroundColor: '#667eea'
+  },
+  filterConfig: {
+    brightness: 0,
+    contrast: 0,
+    saturation: 0,
+    blur: 0
   }
 }
 
@@ -75,9 +83,32 @@ const migrations = {
         ...project.badgeConfig
       }
     }
+  },
+  // Migration from v1 to v2: Add extraText field
+  1: (project) => {
+    return {
+      ...project,
+      schemaVersion: 2,
+      extraText: project.extraText ?? '',
+      textPositions: {
+        ...project.textPositions,
+        extra: project.textPositions?.extra || null
+      }
+    }
+  },
+  // Migration from v2 to v3: Add filterConfig
+  2: (project) => {
+    return {
+      ...project,
+      schemaVersion: 3,
+      filterConfig: project.filterConfig || {
+        brightness: 0,
+        contrast: 0,
+        saturation: 0,
+        blur: 0
+      }
+    }
   }
-  // Future migrations:
-  // 1: (project) => { /* migrate from v1 to v2 */ return { ...project, schemaVersion: 2, newField: 'default' } }
 }
 
 /**
@@ -253,10 +284,12 @@ export const createProjectFromState = (state, projectName, thumbnail = null) => 
     templateId: state.selectedTemplate?.id || 'classic-blues', // Save only template ID
     titleText: state.titleText,
     subtitleText: state.subtitleText,
+    extraText: state.extraText,
     fontConfig: state.fontConfig,
     textColors: state.textColors,
     textPositions: state.textPositions,
     badgeConfig: state.badgeConfig,
+    filterConfig: state.filterConfig,
     thumbnail: thumbnail
   }
 }
