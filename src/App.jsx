@@ -232,7 +232,7 @@ function App() {
               <span className="text-blue-500">l</span>
               <span>Cover</span>
             </div>
-            <span className="text-xs text-gray-500">v1.1.0</span>
+            <span className="text-xs text-gray-500">v1.1.1</span>
           </div>
           <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved} />
         </div>

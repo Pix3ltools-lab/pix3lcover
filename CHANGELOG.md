@@ -2,6 +2,19 @@
 
 All notable changes to Pix3lCover will be documented in this file.
 
+## [1.1.1] - 2026-01-29
+
+### Added
+- **Image Compression**: Automatic image compression on upload using browser-image-compression (max 500KB, JPEG conversion)
+- **Storage Indicator**: Visual progress bar in sidebar showing localStorage usage with color-coded warnings (green/amber/red)
+- **Export/Import JSON**: Backup and restore all projects as JSON files
+  - Export downloads all projects as `pix3lcover-backup-YYYY-MM-DD.json`
+  - Import supports merge (add new, skip duplicates) and replace modes
+
+### Changed
+- Sidebar now displays storage usage at the bottom with project count
+- Upload panel shows compression progress spinner during image processing
+
 ## [1.1.0] - 2026-01-28
 
 ### Added
