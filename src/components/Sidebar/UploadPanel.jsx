@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from 'react'
+import imageCompression from 'browser-image-compression'
 
 function UploadPanel({ onImageUpload }) {
+  const [isCompressing, setIsCompressing] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [previewUrl, setPreviewUrl] = useState(null)
   const [videoFile, setVideoFile] = useState(null)
@@ -10,7 +12,7 @@ function UploadPanel({ onImageUpload }) {
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
 
-  const handleFile = (file) => {
+  const handleFile = async (file) => {
     // Check if it's a video (by MIME type or extension)
     const videoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-m4v', 'video/x-msvideo']
     const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.m4v', '.avi']
@@ -41,16 +43,47 @@ function UploadPanel({ onImageUpload }) {
     setVideoTime(0)
     setVideoDuration(0)
 
-    // Create preview and read file
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const imageUrl = e.target.result
-      setPreviewUrl(imageUrl)
-      if (onImageUpload) {
-        onImageUpload(imageUrl)
+    // Compress image before converting to base64
+    setIsCompressing(true)
+    try {
+      const compressionOptions = {
+        maxSizeMB: 0.5, // Max 500KB for localStorage efficiency
+        maxWidthOrHeight: 1920, // Max dimension
+        useWebWorker: true,
+        fileType: 'image/jpeg' // Convert to JPEG for better compression
       }
+
+      const compressedFile = await imageCompression(file, compressionOptions)
+
+      // Create preview and read compressed file
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageUrl = e.target.result
+        setPreviewUrl(imageUrl)
+        if (onImageUpload) {
+          onImageUpload(imageUrl)
+        }
+        setIsCompressing(false)
+      }
+      reader.onerror = () => {
+        setIsCompressing(false)
+        alert('Error reading compressed image')
+      }
+      reader.readAsDataURL(compressedFile)
+    } catch (error) {
+      console.error('Compression error:', error)
+      setIsCompressing(false)
+      // Fallback: use original file if compression fails
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageUrl = e.target.result
+        setPreviewUrl(imageUrl)
+        if (onImageUpload) {
+          onImageUpload(imageUrl)
+        }
+      }
+      reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleVideoFile = (file) => {
@@ -242,6 +275,17 @@ function UploadPanel({ onImageUpload }) {
         </div>
       )}
 
+      {/* Compression indicator */}
+      {isCompressing && (
+        <div className="mb-3 bg-blue-900/50 border border-blue-700 rounded-lg p-3 flex items-center gap-2">
+          <svg className="w-4 h-4 animate-spin text-blue-400" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+          <span className="text-sm text-blue-300">Compressing image...</span>
+        </div>
+      )}
+
       {/* Upload Area */}
       <div
         className={`
@@ -251,7 +295,7 @@ function UploadPanel({ onImageUpload }) {
             ? 'border-[#E67E22] bg-[#E67E22]/10'
             : 'border-gray-600 hover:border-[#E67E22]'
           }
-          ${videoFile ? 'opacity-50 pointer-events-none' : ''}
+          ${videoFile || isCompressing ? 'opacity-50 pointer-events-none' : ''}
         `}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}

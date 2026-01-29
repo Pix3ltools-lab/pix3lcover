@@ -8,6 +8,7 @@ import ExportPanel from './components/Sidebar/ExportPanel'
 import ProjectGallery from './components/Sidebar/ProjectGallery'
 import ThumbnailCanvas from './components/Canvas/ThumbnailCanvas'
 import StorageWarning from './components/StorageWarning'
+import StorageIndicator from './components/StorageIndicator'
 import AutoSaveIndicator from './components/AutoSaveIndicator'
 import templates from './data/templates'
 import { exportCanvas } from './utils/exportUtils'
@@ -243,8 +244,8 @@ function App() {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-80 bg-[#2a2a2a] border-r border-gray-700 overflow-y-auto">
-          <div className="p-6 space-y-6">
+        <aside className="w-80 bg-[#2a2a2a] border-r border-gray-700 flex flex-col">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {/* Project Gallery */}
             <ProjectGallery
               currentProjectId={currentProjectId}
@@ -362,6 +363,9 @@ function App() {
             {/* Export Panel */}
             <ExportPanel onExport={handleExport} />
           </div>
+
+          {/* Storage Indicator */}
+          <StorageIndicator />
         </aside>
 
         {/* Canvas Area */}
