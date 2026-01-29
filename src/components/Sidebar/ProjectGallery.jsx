@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { getAllProjects, deleteProject, getStorageInfo } from '../../utils/storageUtils'
+import { useState, useEffect, useRef } from 'react'
+import { getAllProjects, deleteProject, getStorageInfo, exportProjectsToJSON, importProjectsFromJSON } from '../../utils/storageUtils'
 
 function ProjectGallery({ currentProjectId, onSave, onLoad, onNew, canvasRef }) {
   const [projects, setProjects] = useState([])
@@ -10,6 +10,8 @@ function ProjectGallery({ currentProjectId, onSave, onLoad, onNew, canvasRef }) 
   const [filterFormat, setFilterFormat] = useState('all') // 'all', '16:9', '9:16'
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('date') // 'date' or 'name'
+  const [isImporting, setIsImporting] = useState(false)
+  const importInputRef = useRef(null)
 
   useEffect(() => {
     loadProjects()
@@ -45,6 +47,48 @@ function ProjectGallery({ currentProjectId, onSave, onLoad, onNew, canvasRef }) 
   const handleNew = () => {
     onNew()
     setShowGallery(false)
+  }
+
+  const handleExport = () => {
+    const result = exportProjectsToJSON()
+    if (result.success) {
+      alert(`Exported ${result.count} project(s) successfully!`)
+    } else {
+      alert(`Export failed: ${result.error}`)
+    }
+  }
+
+  const handleImportClick = () => {
+    importInputRef.current?.click()
+  }
+
+  const handleImportFile = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const mode = projects.length > 0
+      ? confirm('You have existing projects.\n\nOK = Merge (keep existing + add new)\nCancel = Replace all')
+        ? 'merge'
+        : 'replace'
+      : 'replace'
+
+    setIsImporting(true)
+    const result = await importProjectsFromJSON(file, mode)
+    setIsImporting(false)
+
+    if (result.success) {
+      loadProjects()
+      let message = `Imported ${result.imported} project(s) successfully!`
+      if (result.skipped > 0) {
+        message += `\n${result.skipped} duplicate(s) skipped.`
+      }
+      alert(message)
+    } else {
+      alert(`Import failed: ${result.error}`)
+    }
+
+    // Reset input
+    e.target.value = ''
   }
 
   // Filter and sort projects
@@ -288,9 +332,49 @@ function ProjectGallery({ currentProjectId, onSave, onLoad, onNew, canvasRef }) 
           </div>
         )}
 
-        {/* Storage Info */}
-        <div className="text-xs text-gray-500 border-t border-gray-700 pt-2">
-          <p>💾 {storageInfo.projectCount} projects • {storageInfo.sizeInKB} KB used</p>
+        {/* Backup Controls */}
+        <div className="border-t border-gray-700 pt-3">
+          <div className="flex gap-2">
+            <button
+              onClick={handleExport}
+              disabled={projects.length === 0}
+              className="flex-1 px-2 py-1.5 bg-gray-700 text-white rounded text-xs hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+              title="Export all projects as JSON backup"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export
+            </button>
+            <button
+              onClick={handleImportClick}
+              disabled={isImporting}
+              className="flex-1 px-2 py-1.5 bg-gray-700 text-white rounded text-xs hover:bg-gray-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
+              title="Import projects from JSON backup"
+            >
+              {isImporting ? (
+                <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+              ) : (
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+              )}
+              Import
+            </button>
+          </div>
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleImportFile}
+            className="hidden"
+          />
+          <p className="text-xs text-gray-500 mt-2">
+            💾 {storageInfo.projectCount} projects • {storageInfo.sizeInKB} KB used
+          </p>
         </div>
       </div>
     </section>

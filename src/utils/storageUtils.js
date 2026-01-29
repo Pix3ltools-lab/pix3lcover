@@ -203,3 +203,99 @@ export const clearAutoSave = () => {
     return false
   }
 }
+
+/**
+ * Export all projects as JSON file
+ */
+export const exportProjectsToJSON = () => {
+  try {
+    const projects = getAllProjects()
+    if (projects.length === 0) {
+      return { success: false, error: 'No projects to export' }
+    }
+
+    const exportData = {
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      projectCount: projects.length,
+      projects: projects
+    }
+
+    const jsonString = JSON.stringify(exportData, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `pix3lcover-backup-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+
+    return { success: true, count: projects.length }
+  } catch (error) {
+    console.error('Error exporting projects:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+/**
+ * Import projects from JSON file
+ * @param {File} file - The JSON file to import
+ * @param {string} mode - 'merge' (add to existing) or 'replace' (overwrite all)
+ * @returns {Promise<{success: boolean, imported?: number, skipped?: number, error?: string}>}
+ */
+export const importProjectsFromJSON = (file, mode = 'merge') => {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+      try {
+        const importData = JSON.parse(e.target.result)
+
+        // Validate structure
+        if (!importData.projects || !Array.isArray(importData.projects)) {
+          resolve({ success: false, error: 'Invalid backup file format' })
+          return
+        }
+
+        const importedProjects = importData.projects
+        let imported = 0
+        let skipped = 0
+
+        if (mode === 'replace') {
+          // Replace all existing projects
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(importedProjects))
+          imported = importedProjects.length
+        } else {
+          // Merge with existing projects
+          const existingProjects = getAllProjects()
+          const existingIds = new Set(existingProjects.map(p => p.id))
+
+          for (const project of importedProjects) {
+            if (existingIds.has(project.id)) {
+              skipped++
+            } else {
+              existingProjects.push(project)
+              imported++
+            }
+          }
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(existingProjects))
+        }
+
+        resolve({ success: true, imported, skipped })
+      } catch (error) {
+        console.error('Error parsing import file:', error)
+        resolve({ success: false, error: 'Failed to parse backup file' })
+      }
+    }
+
+    reader.onerror = () => {
+      resolve({ success: false, error: 'Failed to read file' })
+    }
+
+    reader.readAsText(file)
+  })
+}

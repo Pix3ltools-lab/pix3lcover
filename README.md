@@ -26,6 +26,7 @@ A professional web application to create stunning YouTube thumbnails for videos 
 - **Auto-save**: Automatic project saving every 30 seconds with restore on load
 - **Storage Warning**: Dismissible banner informing users about localStorage limitations
 - **Storage Indicator**: Visual progress bar showing localStorage usage with color-coded warnings
+- **Export/Import JSON**: Backup and restore all projects as JSON files for local storage
 - **Pix3lTools Branding**: Header link to the Pix3lTools website
 
 ### Planned (Not Yet Implemented)
