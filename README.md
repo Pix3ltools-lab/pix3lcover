@@ -30,6 +30,7 @@ A professional web application to create stunning YouTube thumbnails for videos 
 - **Undo/Redo**: History stack with Ctrl+Z / Ctrl+Shift+Z keyboard shortcuts
 - **Duplicate Project**: Create copies of existing projects with one click
 - **Error Boundaries**: Graceful error handling to prevent app crashes
+- **Data Migration**: Automatic schema migration ensures user data is preserved across app updates
 - **Pix3lTools Branding**: Header link to the Pix3lTools website
 
 ### Planned (Not Yet Implemented)

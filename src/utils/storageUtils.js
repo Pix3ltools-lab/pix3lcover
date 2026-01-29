@@ -6,12 +6,134 @@ const STORAGE_KEY = 'mvtg_projects' // Music Video Thumbnail Generator
 const AUTOSAVE_KEY = 'pix3lcover_autosave'
 
 /**
+ * Current schema version for project data
+ * Increment this when making breaking changes to project structure
+ */
+export const CURRENT_SCHEMA_VERSION = 1
+
+/**
+ * Default values for project fields (used in migrations)
+ */
+const PROJECT_DEFAULTS = {
+  format: '16:9',
+  titleText: '',
+  subtitleText: '',
+  templateId: 'classic-blues',
+  fontConfig: {
+    titleFont: 'Bebas Neue',
+    subtitleFont: 'Montserrat',
+    titleSize: 72,
+    subtitleSize: 36
+  },
+  textColors: {
+    titleColor: null,
+    subtitleColor: null
+  },
+  textPositions: {
+    title: null,
+    subtitle: null
+  },
+  badgeConfig: {
+    enabled: false,
+    style: 'futuristic',
+    position: 'top-right',
+    text: 'AI Generated',
+    transparentBg: true,
+    backgroundColor: '#667eea'
+  }
+}
+
+/**
+ * Migration functions for each schema version
+ * Each function takes a project and returns the migrated project
+ */
+const migrations = {
+  // Migration from no version (legacy) to version 1
+  0: (project) => {
+    return {
+      ...project,
+      schemaVersion: 1,
+      // Ensure all required fields exist with defaults
+      format: project.format || PROJECT_DEFAULTS.format,
+      titleText: project.titleText ?? PROJECT_DEFAULTS.titleText,
+      subtitleText: project.subtitleText ?? PROJECT_DEFAULTS.subtitleText,
+      templateId: project.templateId || PROJECT_DEFAULTS.templateId,
+      fontConfig: {
+        ...PROJECT_DEFAULTS.fontConfig,
+        ...project.fontConfig
+      },
+      textColors: {
+        ...PROJECT_DEFAULTS.textColors,
+        ...project.textColors
+      },
+      textPositions: {
+        ...PROJECT_DEFAULTS.textPositions,
+        ...project.textPositions
+      },
+      badgeConfig: {
+        ...PROJECT_DEFAULTS.badgeConfig,
+        ...project.badgeConfig
+      }
+    }
+  }
+  // Future migrations:
+  // 1: (project) => { /* migrate from v1 to v2 */ return { ...project, schemaVersion: 2, newField: 'default' } }
+}
+
+/**
+ * Migrate a single project to the current schema version
+ */
+const migrateProject = (project) => {
+  let currentVersion = project.schemaVersion || 0
+  let migratedProject = { ...project }
+
+  // Apply migrations sequentially until we reach current version
+  while (currentVersion < CURRENT_SCHEMA_VERSION) {
+    const migrationFn = migrations[currentVersion]
+    if (migrationFn) {
+      migratedProject = migrationFn(migratedProject)
+      currentVersion = migratedProject.schemaVersion
+    } else {
+      // No migration found, just set the version
+      migratedProject.schemaVersion = CURRENT_SCHEMA_VERSION
+      break
+    }
+  }
+
+  return migratedProject
+}
+
+/**
+ * Migrate all projects and save back to localStorage if needed
+ */
+const migrateAllProjects = (projects) => {
+  let needsSave = false
+  const migratedProjects = projects.map(project => {
+    if ((project.schemaVersion || 0) < CURRENT_SCHEMA_VERSION) {
+      needsSave = true
+      return migrateProject(project)
+    }
+    return project
+  })
+
+  if (needsSave) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(migratedProjects))
+    console.log(`Migrated ${migratedProjects.length} project(s) to schema version ${CURRENT_SCHEMA_VERSION}`)
+  }
+
+  return migratedProjects
+}
+
+/**
  * Get all saved projects from localStorage
+ * Automatically migrates old projects to current schema
  */
 export const getAllProjects = () => {
   try {
     const projectsJson = localStorage.getItem(STORAGE_KEY)
-    return projectsJson ? JSON.parse(projectsJson) : []
+    const projects = projectsJson ? JSON.parse(projectsJson) : []
+    // Run migrations if needed
+    return migrateAllProjects(projects)
   } catch (error) {
     console.error('Error loading projects:', error)
     return []
@@ -124,6 +246,7 @@ export const generateProjectId = () => {
 export const createProjectFromState = (state, projectName, thumbnail = null) => {
   return {
     id: state.id || generateProjectId(),
+    schemaVersion: CURRENT_SCHEMA_VERSION,
     name: projectName || `Project ${new Date().toLocaleDateString()}`,
     format: state.format,
     uploadedImage: state.uploadedImage,
@@ -247,6 +370,7 @@ export const exportProjectsToJSON = () => {
 
     const exportData = {
       version: '1.0',
+      schemaVersion: CURRENT_SCHEMA_VERSION,
       exportedAt: new Date().toISOString(),
       projectCount: projects.length,
       projects: projects
@@ -291,7 +415,8 @@ export const importProjectsFromJSON = (file, mode = 'merge') => {
           return
         }
 
-        const importedProjects = importData.projects
+        // Migrate imported projects to current schema
+        const importedProjects = importData.projects.map(p => migrateProject(p))
         let imported = 0
         let skipped = 0
 

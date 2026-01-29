@@ -15,6 +15,10 @@ All notable changes to Pix3lCover will be documented in this file.
 - **Error Boundaries**: React error boundary wrapping the app
   - Graceful error display instead of white screen
   - "Try Again" and "Reload App" recovery options
+- **Data Migration System**: Automatic schema versioning for backward compatibility
+  - Projects now include `schemaVersion` field
+  - Automatic migration of old projects on load
+  - Ensures user data is preserved across app updates
 
 ### Changed
 - Header now includes undo/redo buttons next to auto-save indicator
