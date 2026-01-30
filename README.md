@@ -31,10 +31,16 @@ A professional web application to create stunning YouTube thumbnails for videos 
 - **Duplicate Project**: Create copies of existing projects with one click
 - **Error Boundaries**: Graceful error handling to prevent app crashes
 - **Data Migration**: Automatic schema migration ensures user data is preserved across app updates
+- **Third Text Line**: Optional extra text field below subtitle for additional information
+- **Keyboard Shortcuts**: Ctrl+S save, Ctrl+E export, Delete remove object, Ctrl+Z/Y undo/redo
+- **Image Filters**: Real-time brightness, contrast, saturation, and blur adjustments
+- **Canvas Zoom**: Zoom controls (50%-200%) for detail editing
+- **Background Removal**: AI-powered background removal running entirely in browser (no API costs)
+- **Multiple Layers**: Add overlay images with drag, resize, rotate, and reorder support
+- **Crop Tool**: Interactive image cropping with real-time preview
+- **Grid & Guides**: Toggle grid overlay (20px), snap-to-grid, and center alignment guides
+- **Custom Templates**: Save your current layout as a reusable template
 - **Pix3lTools Branding**: Header link to the Pix3lTools website
-
-### Planned (Not Yet Implemented)
-- Keyboard Shortcuts: Additional shortcuts for common actions
 
 ## Tech Stack
 
@@ -42,6 +48,7 @@ A professional web application to create stunning YouTube thumbnails for videos 
 - **Styling**: Tailwind CSS 3.4
 - **Canvas**: Fabric.js 5.3
 - **Image Compression**: browser-image-compression
+- **Background Removal**: @imgly/background-removal (client-side AI)
 - **Fonts**: Google Fonts (23 total)
 - **Storage**: LocalStorage (project persistence)
 - **Deployment**: Vercel
@@ -101,15 +108,18 @@ npm run preview
 src/
 ├── components/         # React components
 │   ├── Canvas/        # Canvas-related components
-│   │   └── ThumbnailCanvas.jsx  # Main Fabric.js canvas
+│   │   └── ThumbnailCanvas.jsx  # Main Fabric.js canvas with grid/zoom
 │   ├── Sidebar/       # Sidebar panels
-│   │   ├── UploadPanel.jsx      # Image upload
-│   │   ├── TemplateSelector.jsx # Template selection
+│   │   ├── UploadPanel.jsx      # Image upload + crop + bg removal
+│   │   ├── TemplateSelector.jsx # Template selection + custom templates
 │   │   ├── FontSelector.jsx     # Font customization
 │   │   ├── TextColorPicker.jsx  # Text color picker
 │   │   ├── BadgeEditor.jsx      # AI badge editor
+│   │   ├── FilterPanel.jsx      # Image filter controls
+│   │   ├── LayerPanel.jsx       # Overlay layers management
 │   │   ├── ProjectGallery.jsx   # Project gallery with thumbnails
 │   │   └── ExportPanel.jsx      # Export settings
+│   ├── CropModal.jsx            # Image crop dialog
 │   ├── StorageWarning.jsx       # localStorage warning banner
 │   ├── StorageIndicator.jsx     # Storage usage indicator
 │   ├── ErrorBoundary.jsx        # Error handling wrapper
