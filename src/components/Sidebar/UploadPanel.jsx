@@ -1,8 +1,13 @@
 import { useRef, useState, useEffect } from 'react'
 import imageCompression from 'browser-image-compression'
+import { removeBackground } from '@imgly/background-removal'
+import CropModal from '../CropModal'
 
 function UploadPanel({ onImageUpload }) {
   const [isCompressing, setIsCompressing] = useState(false)
+  const [isRemovingBg, setIsRemovingBg] = useState(false)
+  const [removeBgProgress, setRemoveBgProgress] = useState(0)
+  const [showCropModal, setShowCropModal] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [previewUrl, setPreviewUrl] = useState(null)
   const [videoFile, setVideoFile] = useState(null)
@@ -155,6 +160,54 @@ function UploadPanel({ onImageUpload }) {
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
+  const handleRemoveBackground = async () => {
+    if (!previewUrl) return
+
+    setIsRemovingBg(true)
+    setRemoveBgProgress(0)
+
+    try {
+      // Convert data URL to blob
+      const response = await fetch(previewUrl)
+      const blob = await response.blob()
+
+      // Remove background with progress tracking
+      const resultBlob = await removeBackground(blob, {
+        progress: (key, current, total) => {
+          if (total > 0) {
+            setRemoveBgProgress(Math.round((current / total) * 100))
+          }
+        }
+      })
+
+      // Convert result blob to data URL
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const imageUrl = e.target.result
+        setPreviewUrl(imageUrl)
+        if (onImageUpload) {
+          onImageUpload(imageUrl)
+        }
+        setIsRemovingBg(false)
+        setRemoveBgProgress(0)
+      }
+      reader.readAsDataURL(resultBlob)
+    } catch (error) {
+      console.error('Background removal error:', error)
+      alert('Error removing background. Please try again.')
+      setIsRemovingBg(false)
+      setRemoveBgProgress(0)
+    }
+  }
+
+  const handleCropConfirm = (croppedUrl) => {
+    setPreviewUrl(croppedUrl)
+    if (onImageUpload) {
+      onImageUpload(croppedUrl)
+    }
+    setShowCropModal(false)
+  }
+
   const handleDragOver = (e) => {
     e.preventDefault()
     e.stopPropagation()
@@ -286,6 +339,49 @@ function UploadPanel({ onImageUpload }) {
         </div>
       )}
 
+      {/* Background removal indicator */}
+      {isRemovingBg && (
+        <div className="mb-3 bg-purple-900/50 border border-purple-700 rounded-lg p-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 animate-spin text-purple-400" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            <span className="text-sm text-purple-300">Removing background... {removeBgProgress}%</span>
+          </div>
+          <div className="w-full bg-purple-950 rounded-full h-1.5">
+            <div
+              className="bg-purple-500 h-1.5 rounded-full transition-all"
+              style={{ width: `${removeBgProgress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Image editing buttons */}
+      {previewUrl && !videoFile && !isCompressing && !isRemovingBg && (
+        <div className="flex gap-2 mb-3">
+          <button
+            onClick={() => setShowCropModal(true)}
+            className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h2m10-2h2a2 2 0 002-2v-2M6 8H4a2 2 0 00-2 2v2m16-2V8a2 2 0 00-2-2h-2M9 12h6m-3-3v6" />
+            </svg>
+            Crop
+          </button>
+          <button
+            onClick={handleRemoveBackground}
+            className="flex-1 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Remove BG
+          </button>
+        </div>
+      )}
+
       {/* Upload Area */}
       <div
         className={`
@@ -295,7 +391,7 @@ function UploadPanel({ onImageUpload }) {
             ? 'border-[#E67E22] bg-[#E67E22]/10'
             : 'border-gray-600 hover:border-[#E67E22]'
           }
-          ${videoFile || isCompressing ? 'opacity-50 pointer-events-none' : ''}
+          ${videoFile || isCompressing || isRemovingBg ? 'opacity-50 pointer-events-none' : ''}
         `}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -336,6 +432,15 @@ function UploadPanel({ onImageUpload }) {
           className="hidden"
         />
       </div>
+
+      {/* Crop Modal */}
+      {showCropModal && previewUrl && (
+        <CropModal
+          imageUrl={previewUrl}
+          onConfirm={handleCropConfirm}
+          onCancel={() => setShowCropModal(false)}
+        />
+      )}
     </section>
   )
 }

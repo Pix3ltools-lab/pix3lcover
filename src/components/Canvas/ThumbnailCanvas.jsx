@@ -2,11 +2,14 @@ import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 're
 import { fabric } from 'fabric'
 import badgeStyles, { badgePositions } from '../../data/badgeStyles'
 
-const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleText, subtitleText, extraText, fontConfig, textColors, textPositions, onTextPositionChange, badgeConfig, filterConfig }, ref) => {
+const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleText, subtitleText, extraText, fontConfig, textColors, textPositions, onTextPositionChange, badgeConfig, filterConfig, layers = [], onLayerUpdate }, ref) => {
   const canvasRef = useRef(null)
   const fabricCanvasRef = useRef(null)
   const [isReady, setIsReady] = useState(false)
   const [zoom, setZoom] = useState(1)
+  const [showGrid, setShowGrid] = useState(false)
+  const [snapToGrid, setSnapToGrid] = useState(true)
+  const GRID_SIZE = 20
 
   // Calculate canvas dimensions based on format
   // Use display dimensions directly for now
@@ -197,6 +200,74 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
     imageObj.applyFilters()
     canvas.renderAll()
   }, [filterConfig, isReady, imageUrl])
+
+  // Add/update overlay layers
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isReady) return
+
+    const canvas = fabricCanvasRef.current
+
+    // Remove existing layer objects
+    const objects = canvas.getObjects()
+    objects.forEach(obj => {
+      if (obj.name?.startsWith('layer_')) {
+        canvas.remove(obj)
+      }
+    })
+
+    // Add layers
+    layers.forEach((layer) => {
+      fabric.Image.fromURL(layer.imageUrl, (img) => {
+        img.set({
+          name: `layer_${layer.id}`,
+          left: layer.left || 100,
+          top: layer.top || 100,
+          scaleX: layer.scaleX || 0.5,
+          scaleY: layer.scaleY || 0.5,
+          angle: layer.angle || 0,
+          selectable: true,
+          hasControls: true,
+          originX: 'center',
+          originY: 'center'
+        })
+
+        canvas.add(img)
+        // Position layers above background image but below text
+        const bgImage = canvas.getObjects().find(o => o.type === 'image' && !o.name?.startsWith('layer_'))
+        if (bgImage) {
+          canvas.moveTo(img, canvas.getObjects().indexOf(bgImage) + 1)
+        }
+        canvas.renderAll()
+      })
+    })
+  }, [layers, isReady])
+
+  // Track layer position changes
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isReady || !onLayerUpdate) return
+
+    const canvas = fabricCanvasRef.current
+
+    const handleLayerModified = (e) => {
+      const obj = e.target
+      if (obj && obj.name?.startsWith('layer_')) {
+        const layerId = obj.name.replace('layer_', '')
+        onLayerUpdate(layerId, {
+          left: obj.left,
+          top: obj.top,
+          scaleX: obj.scaleX,
+          scaleY: obj.scaleY,
+          angle: obj.angle
+        })
+      }
+    }
+
+    canvas.on('object:modified', handleLayerModified)
+
+    return () => {
+      canvas.off('object:modified', handleLayerModified)
+    }
+  }, [isReady, onLayerUpdate])
 
   // Add/update title text
   useEffect(() => {
@@ -605,6 +676,113 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
     canvas.renderAll()
   }, [zoom, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
 
+  // Draw grid overlay
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isReady) return
+
+    const canvas = fabricCanvasRef.current
+
+    // Remove existing grid lines
+    const objects = canvas.getObjects()
+    objects.forEach(obj => {
+      if (obj.name === 'gridLine' || obj.name === 'centerLine') {
+        canvas.remove(obj)
+      }
+    })
+
+    if (showGrid) {
+      // Draw vertical grid lines
+      for (let x = GRID_SIZE; x < CANVAS_WIDTH; x += GRID_SIZE) {
+        const line = new fabric.Line([x, 0, x, CANVAS_HEIGHT], {
+          name: 'gridLine',
+          stroke: 'rgba(255, 255, 255, 0.1)',
+          strokeWidth: 1,
+          selectable: false,
+          evented: false
+        })
+        canvas.add(line)
+      }
+
+      // Draw horizontal grid lines
+      for (let y = GRID_SIZE; y < CANVAS_HEIGHT; y += GRID_SIZE) {
+        const line = new fabric.Line([0, y, CANVAS_WIDTH, y], {
+          name: 'gridLine',
+          stroke: 'rgba(255, 255, 255, 0.1)',
+          strokeWidth: 1,
+          selectable: false,
+          evented: false
+        })
+        canvas.add(line)
+      }
+
+      // Draw center lines (more visible)
+      const centerV = new fabric.Line([CANVAS_WIDTH / 2, 0, CANVAS_WIDTH / 2, CANVAS_HEIGHT], {
+        name: 'centerLine',
+        stroke: 'rgba(230, 126, 34, 0.5)',
+        strokeWidth: 1,
+        strokeDashArray: [5, 5],
+        selectable: false,
+        evented: false
+      })
+      canvas.add(centerV)
+
+      const centerH = new fabric.Line([0, CANVAS_HEIGHT / 2, CANVAS_WIDTH, CANVAS_HEIGHT / 2], {
+        name: 'centerLine',
+        stroke: 'rgba(230, 126, 34, 0.5)',
+        strokeWidth: 1,
+        strokeDashArray: [5, 5],
+        selectable: false,
+        evented: false
+      })
+      canvas.add(centerH)
+
+      canvas.renderAll()
+    }
+  }, [showGrid, isReady, CANVAS_WIDTH, CANVAS_HEIGHT])
+
+  // Snap to grid functionality
+  useEffect(() => {
+    if (!fabricCanvasRef.current || !isReady) return
+
+    const canvas = fabricCanvasRef.current
+
+    const handleObjectMoving = (e) => {
+      if (!snapToGrid) return
+
+      const obj = e.target
+      const snapThreshold = GRID_SIZE / 2
+
+      // Snap to grid
+      const left = Math.round(obj.left / GRID_SIZE) * GRID_SIZE
+      const top = Math.round(obj.top / GRID_SIZE) * GRID_SIZE
+
+      // Check if close enough to snap
+      if (Math.abs(obj.left - left) < snapThreshold) {
+        obj.set('left', left)
+      }
+      if (Math.abs(obj.top - top) < snapThreshold) {
+        obj.set('top', top)
+      }
+
+      // Snap to center lines
+      const centerX = CANVAS_WIDTH / 2
+      const centerY = CANVAS_HEIGHT / 2
+
+      if (Math.abs(obj.left - centerX) < snapThreshold) {
+        obj.set('left', centerX)
+      }
+      if (Math.abs(obj.top - centerY) < snapThreshold) {
+        obj.set('top', centerY)
+      }
+    }
+
+    canvas.on('object:moving', handleObjectMoving)
+
+    return () => {
+      canvas.off('object:moving', handleObjectMoving)
+    }
+  }, [isReady, snapToGrid, CANVAS_WIDTH, CANVAS_HEIGHT])
+
   // Zoom handlers
   const handleZoomIn = () => {
     setZoom(prev => Math.min(prev + 0.25, 2))
@@ -628,35 +806,69 @@ const ThumbnailCanvas = forwardRef(({ format, imageUrl, selectedTemplate, titleT
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center p-4">
-      {/* Zoom Controls */}
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          onClick={handleZoomOut}
-          disabled={zoom <= 0.5}
-          className="w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 rounded text-white transition-colors"
-          title="Zoom out"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-          </svg>
-        </button>
-        <button
-          onClick={handleZoomReset}
-          className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white transition-colors min-w-[60px]"
-          title="Reset zoom"
-        >
-          {Math.round(zoom * 100)}%
-        </button>
-        <button
-          onClick={handleZoomIn}
-          disabled={zoom >= 2}
-          className="w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 rounded text-white transition-colors"
-          title="Zoom in"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-        </button>
+      {/* Canvas Controls */}
+      <div className="flex items-center gap-4 mb-4">
+        {/* Zoom Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleZoomOut}
+            disabled={zoom <= 0.5}
+            className="w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 rounded text-white transition-colors"
+            title="Zoom out"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            </svg>
+          </button>
+          <button
+            onClick={handleZoomReset}
+            className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white transition-colors min-w-[60px]"
+            title="Reset zoom"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+          <button
+            onClick={handleZoomIn}
+            disabled={zoom >= 2}
+            className="w-8 h-8 flex items-center justify-center bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-600 rounded text-white transition-colors"
+            title="Zoom in"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="w-px h-6 bg-gray-600" />
+
+        {/* Grid Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowGrid(!showGrid)}
+            className={`px-3 py-1 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
+              showGrid ? 'bg-[#E67E22] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+            title="Toggle grid"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7M4 18h4" />
+            </svg>
+            Grid
+          </button>
+          <button
+            onClick={() => setSnapToGrid(!snapToGrid)}
+            className={`px-3 py-1 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
+              snapToGrid ? 'bg-[#E67E22] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+            title="Toggle snap to grid"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Snap
+          </button>
+        </div>
       </div>
 
       {/* Canvas Container */}

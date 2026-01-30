@@ -5,6 +5,7 @@ import FontSelector from './components/Sidebar/FontSelector'
 import TextColorPicker from './components/Sidebar/TextColorPicker'
 import BadgeEditor from './components/Sidebar/BadgeEditor'
 import FilterPanel from './components/Sidebar/FilterPanel'
+import LayerPanel from './components/Sidebar/LayerPanel'
 import ExportPanel from './components/Sidebar/ExportPanel'
 import ProjectGallery from './components/Sidebar/ProjectGallery'
 import ThumbnailCanvas from './components/Canvas/ThumbnailCanvas'
@@ -53,6 +54,7 @@ function App() {
     saturation: 0,
     blur: 0
   })
+  const [layers, setLayers] = useState([])
   const canvasRef = useRef(null)
   const isRestoringHistory = useRef(false)
 
@@ -129,7 +131,8 @@ function App() {
     textColors,
     textPositions,
     badgeConfig,
-    filterConfig
+    filterConfig,
+    layers
   }
 
   const { saveStatus, lastSaved } = useAutoSave(autoSaveState, true)
@@ -171,6 +174,7 @@ function App() {
           saturation: 0,
           blur: 0
         })
+        setLayers(autoSave.layers || [])
       } else {
         clearAutoSave()
       }
@@ -223,7 +227,8 @@ function App() {
       textColors,
       textPositions,
       badgeConfig,
-      filterConfig
+      filterConfig,
+      layers
     }
 
     const project = createProjectFromState(currentState, projectName, thumbnail)
@@ -253,6 +258,7 @@ function App() {
     setTextPositions(project.textPositions || { title: null, subtitle: null, extra: null })
     setBadgeConfig(project.badgeConfig)
     setFilterConfig(project.filterConfig || { brightness: 0, contrast: 0, saturation: 0, blur: 0 })
+    setLayers(project.layers || [])
     alert(`Project "${project.name}" loaded successfully!`)
   }
 
@@ -294,11 +300,39 @@ function App() {
         saturation: 0,
         blur: 0
       })
+      setLayers([])
     }
   }
 
   const handleFilterChange = (newFilterConfig) => {
     setFilterConfig(newFilterConfig)
+  }
+
+  const handleAddLayer = (imageUrl) => {
+    const newLayer = {
+      id: `layer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      imageUrl,
+      left: 100,
+      top: 100,
+      scaleX: 0.5,
+      scaleY: 0.5,
+      angle: 0
+    }
+    setLayers(prev => [...prev, newLayer])
+  }
+
+  const handleUpdateLayer = (layerId, updates) => {
+    setLayers(prev => prev.map(layer =>
+      layer.id === layerId ? { ...layer, ...updates } : layer
+    ))
+  }
+
+  const handleDeleteLayer = (layerId) => {
+    setLayers(prev => prev.filter(layer => layer.id !== layerId))
+  }
+
+  const handleReorderLayers = (newLayers) => {
+    setLayers(newLayers)
   }
 
   const handleExport = useCallback((options) => {
@@ -389,7 +423,7 @@ function App() {
               <span className="text-blue-500">l</span>
               <span>Cover</span>
             </div>
-            <span className="text-xs text-gray-500">v1.2.0</span>
+            <span className="text-xs text-gray-500">v1.3.0</span>
           </div>
           <div className="flex items-center gap-3">
             {/* Undo/Redo Buttons */}
@@ -446,6 +480,15 @@ function App() {
               onFilterChange={handleFilterChange}
             />
 
+            {/* Layer Panel */}
+            <LayerPanel
+              layers={layers}
+              onAddLayer={handleAddLayer}
+              onUpdateLayer={handleUpdateLayer}
+              onDeleteLayer={handleDeleteLayer}
+              onReorderLayers={handleReorderLayers}
+            />
+
             {/* Format Selector */}
             <section>
               <h2 className="text-lg font-semibold mb-3 text-[#E67E22]">
@@ -490,6 +533,7 @@ function App() {
             <TemplateSelector
               selectedTemplate={selectedTemplate}
               onSelectTemplate={handleTemplateSelect}
+              currentState={{ selectedTemplate, fontConfig, textColors }}
             />
 
             {/* Text Panel */}
@@ -584,6 +628,8 @@ function App() {
             onTextPositionChange={handleTextPositionChange}
             badgeConfig={badgeConfig}
             filterConfig={filterConfig}
+            layers={layers}
+            onLayerUpdate={handleUpdateLayer}
           />
         </main>
       </div>

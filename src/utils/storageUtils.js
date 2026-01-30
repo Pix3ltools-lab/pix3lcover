@@ -9,7 +9,7 @@ const AUTOSAVE_KEY = 'pix3lcover_autosave'
  * Current schema version for project data
  * Increment this when making breaking changes to project structure
  */
-export const CURRENT_SCHEMA_VERSION = 3
+export const CURRENT_SCHEMA_VERSION = 4
 
 /**
  * Default values for project fields (used in migrations)
@@ -48,7 +48,9 @@ const PROJECT_DEFAULTS = {
     contrast: 0,
     saturation: 0,
     blur: 0
-  }
+  },
+  layers: [],
+  customTemplates: []
 }
 
 /**
@@ -107,6 +109,15 @@ const migrations = {
         saturation: 0,
         blur: 0
       }
+    }
+  },
+  // Migration from v3 to v4: Add layers and customTemplates
+  3: (project) => {
+    return {
+      ...project,
+      schemaVersion: 4,
+      layers: project.layers || [],
+      customTemplates: project.customTemplates || []
     }
   }
 }
@@ -290,6 +301,7 @@ export const createProjectFromState = (state, projectName, thumbnail = null) => 
     textPositions: state.textPositions,
     badgeConfig: state.badgeConfig,
     filterConfig: state.filterConfig,
+    layers: state.layers || [],
     thumbnail: thumbnail
   }
 }
@@ -434,6 +446,59 @@ export const exportProjectsToJSON = () => {
  * @param {string} mode - 'merge' (add to existing) or 'replace' (overwrite all)
  * @returns {Promise<{success: boolean, imported?: number, skipped?: number, error?: string}>}
  */
+/**
+ * Custom Templates Storage Key
+ */
+const CUSTOM_TEMPLATES_KEY = 'pix3lcover_custom_templates'
+
+/**
+ * Get all custom templates
+ */
+export const getCustomTemplates = () => {
+  try {
+    const templatesJson = localStorage.getItem(CUSTOM_TEMPLATES_KEY)
+    return templatesJson ? JSON.parse(templatesJson) : []
+  } catch (error) {
+    console.error('Error loading custom templates:', error)
+    return []
+  }
+}
+
+/**
+ * Save a custom template
+ */
+export const saveCustomTemplate = (template) => {
+  try {
+    const templates = getCustomTemplates()
+    templates.push({
+      ...template,
+      id: `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      isCustom: true,
+      createdAt: new Date().toISOString()
+    })
+    localStorage.setItem(CUSTOM_TEMPLATES_KEY, JSON.stringify(templates))
+    return true
+  } catch (error) {
+    console.error('Error saving custom template:', error)
+    return false
+  }
+}
+
+/**
+ * Delete a custom template
+ */
+export const deleteCustomTemplate = (templateId) => {
+  try {
+    const templates = getCustomTemplates()
+    const filtered = templates.filter(t => t.id !== templateId)
+    localStorage.setItem(CUSTOM_TEMPLATES_KEY, JSON.stringify(filtered))
+    return true
+  } catch (error) {
+    console.error('Error deleting custom template:', error)
+    return false
+  }
+}
+
 export const importProjectsFromJSON = (file, mode = 'merge') => {
   return new Promise((resolve) => {
     const reader = new FileReader()

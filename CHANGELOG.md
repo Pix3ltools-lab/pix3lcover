@@ -2,6 +2,40 @@
 
 All notable changes to Pix3lCover will be documented in this file.
 
+## [1.3.0] - 2026-01-30
+
+### Added
+- **Background Removal**: AI-powered background removal running entirely in browser
+  - Uses @imgly/background-removal (no server, no API costs)
+  - Progress indicator during processing
+  - Works offline after initial model download
+- **Multiple Layers**: Support for overlay images on canvas
+  - Add multiple PNG/JPG images as overlay layers
+  - Drag, resize, and rotate layers on canvas
+  - Reorder layers with up/down controls
+  - Layer positions saved with project
+- **Crop Tool**: Integrated image cropping
+  - Crop images before adding to canvas
+  - Drag to move, resize with corner handle
+  - Preview of crop area in real-time
+- **Grid & Guides**: Alignment aids for precise positioning
+  - Toggle grid overlay (20px spacing)
+  - Toggle snap-to-grid functionality
+  - Center lines (dashed) for easy alignment
+  - Snap to center when moving objects
+- **Custom Templates**: Save and reuse your own templates
+  - Save current layout as custom template
+  - Custom templates shown in sidebar
+  - Delete custom templates when no longer needed
+
+### Changed
+- Schema version updated to 4 (automatic migration)
+- Upload panel now shows Crop and Remove BG buttons
+- Canvas controls reorganized with grid/snap toggles
+
+### Dependencies
+- Added: @imgly/background-removal ^1.7.0
+
 ## [1.2.0] - 2026-01-29
 
 ### Added
